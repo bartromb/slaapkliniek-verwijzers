@@ -214,3 +214,10 @@ def test_campussen_op_infopagina_en_in_dropdown(dist):
         for naam in namen:
             assert naam in info and naam in form, (lang, naam)
         assert 'value="aalst-moorselbaan"' in form
+
+
+def test_elke_taal_heeft_haar_eigen_video(dist):
+    for lang in LANGS:
+        html = (dist / lang / "index.html").read_text(encoding="utf-8")
+        assert f"static/video/verwijzers_demo_{lang}.mp4" in html and f"verwijzers_demo_{lang}.jpg" in html, lang
+        assert (ROOT / "static" / "video" / f"verwijzers_demo_{lang}.mp4").stat().st_size > 1_000_000, lang

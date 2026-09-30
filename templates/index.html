@@ -38,8 +38,8 @@
   <h2 id="video">{{ t('index.video_titel') }}</h2>
   <p class="klein">{{ t('index.video_noot') }}</p>
   <video class="demo" controls preload="none" playsinline width="1366" height="768"
-         poster="{{ base_path }}static/video/verwijzers_demo_nl.jpg">
-    <source src="{{ base_path }}static/video/verwijzers_demo_nl.mp4" type="video/mp4">
+         poster="{{ base_path }}static/video/verwijzers_demo_{{ lang }}.jpg">
+    <source src="{{ base_path }}static/video/verwijzers_demo_{{ lang }}.mp4" type="video/mp4">
     {{ t('index.video_niet') }}
   </video>
 </section>

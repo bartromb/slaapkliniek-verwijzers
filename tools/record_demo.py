@@ -39,6 +39,60 @@ CAPTIONS = {
         "login": "“Inloggen op Consult” gaat rechtstreeks naar het portaal: itsme of eID.",
         "einde": "Klaar: verwijsbrief als bijlage, afspraak in de agenda van de Slaapkliniek.",
     },
+    "en": {
+        "intro": "Requesting a sleep study via verwijzers.slaapkliniek.be — how it works",
+        "info": "Step 1 — Polygraphy or polysomnography? The info page helps you choose.",
+        "form": "Step 2 — Fill in the referral letter. Everything stays in your browser.",
+        "verwijzer": "Your details as referring physician, with RIZIV/INAMI number.",
+        "patient": "The patient: name, date of birth, sex. National register number is optional.",
+        "onderzoek": "Requested study, preferred site and urgency.",
+        "klinisch": "Symptoms and anthropometry: the BMI is calculated immediately.",
+        "ess": "Epworth Sleepiness Scale: eight items, total calculated automatically.",
+        "stopbang": "STOP-BANG: BMI, age, neck circumference and sex are already derived.",
+        "keuzehulp": "The decision aid suggests a study type. The sleep physician decides.",
+        "pdf": "Step 3 — Create the referral letter (PDF). Nothing is sent to any server.",
+        "pdf_toon": "The PDF: ready to attach.",
+        "volgende": "Next step: book the appointment yourself in Nexuzhealth Consult.",
+        "consult": "Step 4 — The step-by-step guide for Consult, with a fallback option.",
+        "login": "\u201cLog in to Consult\u201d goes straight to the portal: itsme or eID.",
+        "einde": "Done: referral letter attached, appointment in the Sleep Clinic's schedule.",
+    },
+    "fr": {
+        "intro": "Demander un examen du sommeil via verwijzers.slaapkliniek.be — comment ça marche",
+        "info": "Étape 1 — Polygraphie ou polysomnographie ? La page d'info aide à choisir.",
+        "form": "Étape 2 — Remplissez la lettre de renvoi. Tout reste dans votre navigateur.",
+        "verwijzer": "Vos coordonnées de prescripteur, avec le numéro INAMI.",
+        "patient": "Le patient : nom, date de naissance, sexe. Le numéro de registre national est facultatif.",
+        "onderzoek": "Examen demandé, site préféré et urgence.",
+        "klinisch": "Plaintes et anthropométrie : l'IMC est calculé immédiatement.",
+        "ess": "Échelle de somnolence d'Epworth : huit items, total automatique.",
+        "stopbang": "STOP-BANG : IMC, âge, tour de cou et sexe sont déjà déduits.",
+        "keuzehulp": "L'aide à la décision propose un examen. Le médecin du sommeil décide.",
+        "pdf": "Étape 3 — Créez la lettre de renvoi (PDF). Rien n'est envoyé à un serveur.",
+        "pdf_toon": "Le PDF : prêt à joindre en annexe.",
+        "volgende": "Étape suivante : prendre rendez-vous vous-même dans Nexuzhealth Consult.",
+        "consult": "Étape 4 — Le guide pas à pas pour Consult, avec une solution de repli.",
+        "login": "« Se connecter à Consult » mène directement au portail : itsme ou eID.",
+        "einde": "Terminé : lettre de renvoi en annexe, rendez-vous dans l'agenda de la Clinique du sommeil.",
+    },
+    "de": {
+        "intro": "Schlafuntersuchung anfragen über verwijzers.slaapkliniek.be — so funktioniert es",
+        "info": "Schritt 1 — Polygraphie oder Polysomnographie? Die Infoseite hilft bei der Wahl.",
+        "form": "Schritt 2 — Überweisungsschreiben ausfüllen. Alles bleibt in Ihrem Browser.",
+        "verwijzer": "Ihre Angaben als Zuweiser, mit RIZIV/INAMI-Nummer.",
+        "patient": "Der Patient: Name, Geburtsdatum, Geschlecht. Die Nationalregisternummer ist optional.",
+        "onderzoek": "Gewünschte Untersuchung, bevorzugter Standort und Dringlichkeit.",
+        "klinisch": "Beschwerden und Anthropometrie: der BMI wird sofort berechnet.",
+        "ess": "Epworth Sleepiness Scale: acht Items, Gesamtwert automatisch.",
+        "stopbang": "STOP-BANG: BMI, Alter, Halsumfang und Geschlecht sind bereits abgeleitet.",
+        "keuzehulp": "Die Entscheidungshilfe macht einen Vorschlag. Der Schlafmediziner entscheidet.",
+        "pdf": "Schritt 3 — Überweisungsschreiben (PDF) erstellen. Nichts wird an einen Server gesendet.",
+        "pdf_toon": "Das PDF: bereit als Anhang.",
+        "volgende": "Nächster Schritt: den Termin selbst in Nexuzhealth Consult buchen.",
+        "consult": "Schritt 4 — Die Schritt-für-Schritt-Anleitung für Consult, mit Ausweichmöglichkeit.",
+        "login": "\u201eBei Consult anmelden\u201c führt direkt zum Portal: itsme oder eID.",
+        "einde": "Fertig: Überweisungsschreiben als Anhang, Termin im Kalender der Schlafklinik.",
+    },
 }
 
 DEMO = {
@@ -46,7 +100,13 @@ DEMO = {
     "verwijzer_adres": "Dorpsstraat 1, 9230 Wetteren", "verwijzer_tel": "09 123 45 67",
     "patient_naam": "Voorbeeld Jan", "patient_geboortedatum": "1968-04-12",
     "lengte": "178", "gewicht": "112", "hals": "43",
-    "medicatie": "Amlodipine 5 mg", "vraagstelling": "Vermoeden van obstructief slaapapneu; graag polygrafie.",
+    "medicatie": "Amlodipine 5 mg",
+}
+VRAAGSTELLING = {
+    "nl": "Vermoeden van obstructief slaapapneu; graag polygrafie.",
+    "en": "Suspected obstructive sleep apnoea; polygraphy requested.",
+    "fr": "Suspicion d'apnées obstructives du sommeil ; polygraphie souhaitée.",
+    "de": "Verdacht auf obstruktive Schlafapnoe; Polygraphie erbeten.",
 }
 
 
@@ -165,7 +225,7 @@ def run(args):
             d.click(f"input[name='sb_{k}']", pause=0.25)
         d.move_to("#sb_totaal"); time.sleep(1.4)
         d.type_into("#medicatie", DEMO["medicatie"])
-        d.type_into("#vraagstelling", DEMO["vraagstelling"])
+        d.type_into("#vraagstelling", VRAAGSTELLING[lang])
         d.caption("keuzehulp", 0.3); d.move_to("#keuzehulp_tekst"); time.sleep(3.0); d.caption_off()
 
         # 3. PDF
