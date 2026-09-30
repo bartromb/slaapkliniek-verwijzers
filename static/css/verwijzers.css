@@ -44,9 +44,8 @@ header.top { background: var(--wit); border-bottom: 1px solid var(--lijn); }
 
 /* ── tekst ── */
 main { padding: 0 0 2.5rem; }
-main > *, .pagina > * { max-width: var(--breed); margin-left: auto; margin-right: auto; padding-left: 1rem; padding-right: 1rem; }
+main > * { max-width: var(--breed); margin-left: auto; margin-right: auto; padding-left: 1rem; padding-right: 1rem; }
 .pagina { padding-top: 1.9rem; }
-.pagina > h1 + .lead + .klein { margin-top: -.3rem; }
 h1 { font: 800 clamp(1.6rem, 3.6vw, 2.15rem)/1.15 var(--kop); color: var(--inkt); margin: 0 0 .6rem; letter-spacing: -.01em; }
 h2 { font: 800 1.25rem/1.25 var(--kop); color: var(--inkt); margin: 0 0 .7rem; }
 h3 { font: 700 1rem/1.3 var(--kop); color: var(--inkt); margin: 0 0 .35rem; }
