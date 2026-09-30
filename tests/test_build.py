@@ -183,3 +183,13 @@ def test_pdf_maak_met_jspdf_in_v8():
     assert "Voorbeeld" not in naam
     kop = ctx.eval("(function(){ var d = new window.jspdf.jsPDF({unit:'mm', format:'a4'}); d.text('x', 10, 10); return d.output().slice(0, 5); })()")
     assert kop == "%PDF-"
+
+
+def test_consult_login_gaat_rechtstreeks_naar_het_portaal_per_taal(dist):
+    """Geen tussenstap via de nexuzhealth-marketingpagina: de knop gaat naar het pro-portaal,
+    dat meteen de login start, met de taal van de pagina."""
+    for lang in LANGS:
+        html = (dist / lang / "consult" / "index.html").read_text(encoding="utf-8")
+        assert f'href="https://mynexuzpro.nexuzhealth.be/?language={lang}"' in html, lang
+        assert f"lang={lang}&amp;target=clinicus" in html, lang
+        assert "{lang}" not in html

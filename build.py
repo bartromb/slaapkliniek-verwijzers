@@ -87,11 +87,13 @@ def main(argv: list[str]) -> int:
         js_i18n = {k: val for k, val in s.items() if k.startswith(("js.", "aanvraag."))}
         js_site = {"lang": lang, "base_path": base_path, "keuzehulp": site.get("keuzehulp") or {},
                    "campussen": {c["id"]: c["naam"] for c in campussen}}
+        # {lang} in de Consult-URL's per taal invullen (login-portaal en accountformulier zijn meertalig)
+        consult_lang = {k: (v.replace("{lang}", lang) if isinstance(v, str) else v) for k, v in consult.items()}
         for pagina, pad in PAGINAS.items():
             html = env.get_template(f"{pagina}.html").render(
                 t=t, lang=lang, langs=LANGS, pagina=pagina, pagina_pad=pad, base_path=base_path,
                 site_url=site_url, terug_url=site.get("terug_url") or base_path, versie=v,
-                campussen=campussen, contact=contact, consult=consult, js_i18n=js_i18n, js_site=js_site)
+                campussen=campussen, contact=contact, consult=consult_lang, js_i18n=js_i18n, js_site=js_site)
             uitvoer[DIST / lang / pad / "index.html"] = html
     uitvoer[DIST / "index.html"] = env.get_template("root.html").render(
         base_path=base_path, site_url=site_url, langs=LANGS, site_naam=strings["nl"]["site.naam"],
