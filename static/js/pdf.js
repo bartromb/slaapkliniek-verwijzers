@@ -47,13 +47,18 @@
       var w = ascii(waarde);
       if (w === '') w = ascii(t('js.pdf_geen'));
       doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5);
-      var labelTxt = ascii(label) + ':';
+      // Een lang label (bv. "Lengte / gewicht / BMI / halsomtrek") liep de waardekolom in:
+      // het label wordt binnen zijn eigen kolom afgebroken, de waarde start op dezelfde regel.
+      var labelLijnen = doc.splitTextToSize(ascii(label) + ':', 46);
+      doc.setFont('helvetica', 'normal');
       var lijnen = doc.splitTextToSize(w, breedte - 52);
-      nieuwePaginaAlsNodig(regelH * lijnen.length);
-      doc.text(labelTxt, marge, y);
+      var n = Math.max(lijnen.length, labelLijnen.length);
+      nieuwePaginaAlsNodig(regelH * n);
+      doc.setFont('helvetica', 'bold');
+      doc.text(labelLijnen, marge, y);
       doc.setFont('helvetica', 'normal');
       doc.text(lijnen, marge + 50, y);
-      y += regelH * lijnen.length;
+      y += regelH * n;
     }
     function alinea(txt) {
       doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5);
