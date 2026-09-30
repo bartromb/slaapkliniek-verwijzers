@@ -9,7 +9,6 @@
   "footer.privacy": "No data is sent to or stored on our server through this website.",
   "footer.broncode": "Source code",
   "footer.licentie": "BSD-3 licence",
-
   "index.titel": "Request a sleep study",
   "index.intro": "This page helps general practitioners and other physicians request a polygraphy (PG) or polysomnography (PSG) at the Sleep Clinic quickly. You fill in a structured referral letter, turn it into a PDF in your browser, and book the appointment yourself in Nexuzhealth Consult.",
   "index.stappen_titel": "How it works",
@@ -32,7 +31,6 @@
   "index.contact_tel": "Secretariat",
   "index.contact_ehealthbox": "eHealthBox",
   "index.contact_email": "E-mail (not for patient data)",
-
   "aanvraag.titel": "Sleep study referral letter",
   "aanvraag.intro": "Fill in the fields and click “Create referral letter (PDF)” at the bottom. The PDF is generated in your browser; nothing is sent to our server.",
   "aanvraag.verplicht": "Required fields are marked with *.",
@@ -122,7 +120,6 @@
   "aanvraag.volgende_titel": "Next step",
   "aanvraag.volgende_tekst": "Attach this PDF to your appointment in Nexuzhealth Consult.",
   "aanvraag.volgende_knop": "To the Consult step-by-step guide",
-
   "consult.titel": "Book an appointment in Nexuzhealth Consult",
   "consult.intro": "Nexuzhealth Consult is nexuzhealth's free portal for external healthcare providers. You log in with itsme or eID, look up the patient, choose the department and a time slot, and attach the referral letter. The appointment then goes straight into the Sleep Clinic's schedule.",
   "consult.knop_login": "Log in to Consult",
@@ -142,7 +139,6 @@
   "consult.terugval_tel": "Secretariat",
   "consult.terugval_ehealthbox": "eHealthBox",
   "consult.geen_patientdata": "Never send patient data by ordinary e-mail.",
-
   "js.val_verplicht": "Please fill in the required fields: {velden}",
   "js.val_riziv": "The RIZIV/INAMI number has the format 1-23456-78-901.",
   "js.val_geboortedatum": "Enter a valid date of birth in the past.",
@@ -155,7 +151,6 @@
   "js.keuze_onvolledig": "Fill in the STOP-BANG items for a suggestion.",
   "js.ess_interpretatie_normaal": "normal (0–10)",
   "js.ess_interpretatie_verhoogd": "increased sleepiness (11–24)",
-
   "js.pdf_kop": "Sleep study request — Sleep Clinic",
   "js.pdf_datum": "Date",
   "js.pdf_verwijzer": "Referring physician",
@@ -184,5 +179,8 @@
   "js.pdf_ja": "yes",
   "js.pdf_nee": "no",
   "js.pdf_voettekst": "Created in the referring physician's browser; no data was sent to the website.",
-  "js.pdf_bestandsnaam": "referral_sleepclinic"
+  "js.pdf_bestandsnaam": "referral_sleepclinic",
+  "index.video_titel": "See how it works (1 min 45)",
+  "index.video_noot": "Silent video with fictitious data: info, filling in the referral letter, creating the PDF and the step to Consult.",
+  "index.video_niet": "Your browser cannot play this video."
 }

@@ -9,7 +9,6 @@
   "footer.privacy": "Aucune donnée n’est envoyée à notre serveur ni stockée via ce site.",
   "footer.broncode": "Code source",
   "footer.licentie": "Licence BSD-3",
-
   "index.titel": "Demander un examen du sommeil",
   "index.intro": "Cette page aide les médecins généralistes et les autres médecins à demander rapidement une polygraphie (PG) ou une polysomnographie (PSG) à la Clinique du sommeil. Vous remplissez une lettre de renvoi structurée, vous en faites un PDF dans votre navigateur et vous prenez rendez-vous vous-même dans Nexuzhealth Consult.",
   "index.stappen_titel": "Comment ça marche",
@@ -32,7 +31,6 @@
   "index.contact_tel": "Secrétariat",
   "index.contact_ehealthbox": "eHealthBox",
   "index.contact_email": "E-mail (pas pour les données de patients)",
-
   "aanvraag.titel": "Lettre de renvoi pour examen du sommeil",
   "aanvraag.intro": "Remplissez les champs et cliquez en bas sur « Créer la lettre de renvoi (PDF) ». Le PDF est généré dans votre navigateur ; rien n’est envoyé à notre serveur.",
   "aanvraag.verplicht": "Les champs obligatoires sont marqués d’un *.",
@@ -122,7 +120,6 @@
   "aanvraag.volgende_titel": "Étape suivante",
   "aanvraag.volgende_tekst": "Ajoutez ce PDF en annexe à votre rendez-vous dans Nexuzhealth Consult.",
   "aanvraag.volgende_knop": "Vers le guide Consult",
-
   "consult.titel": "Prendre rendez-vous dans Nexuzhealth Consult",
   "consult.intro": "Nexuzhealth Consult est le portail gratuit de nexuzhealth pour les prestataires de soins externes. Vous vous connectez avec itsme ou eID, recherchez le patient, choisissez le service et un créneau, et ajoutez la lettre de renvoi. Le rendez-vous est alors directement inscrit dans l’agenda de la Clinique du sommeil.",
   "consult.knop_login": "Se connecter à Consult",
@@ -142,7 +139,6 @@
   "consult.terugval_tel": "Secrétariat",
   "consult.terugval_ehealthbox": "eHealthBox",
   "consult.geen_patientdata": "N’envoyez jamais de données de patients par e-mail ordinaire.",
-
   "js.val_verplicht": "Veuillez remplir les champs obligatoires : {velden}",
   "js.val_riziv": "Le numéro INAMI a le format 1-23456-78-901.",
   "js.val_geboortedatum": "Indiquez une date de naissance valide, dans le passé.",
@@ -155,7 +151,6 @@
   "js.keuze_onvolledig": "Complétez les items STOP-BANG pour obtenir une suggestion.",
   "js.ess_interpretatie_normaal": "normal (0–10)",
   "js.ess_interpretatie_verhoogd": "somnolence accrue (11–24)",
-
   "js.pdf_kop": "Demande d’examen du sommeil — Clinique du sommeil",
   "js.pdf_datum": "Date",
   "js.pdf_verwijzer": "Médecin prescripteur",
@@ -184,5 +179,8 @@
   "js.pdf_ja": "oui",
   "js.pdf_nee": "non",
   "js.pdf_voettekst": "Créé dans le navigateur du prescripteur ; aucune donnée n’a été envoyée au site.",
-  "js.pdf_bestandsnaam": "lettre_renvoi_clinique_sommeil"
+  "js.pdf_bestandsnaam": "lettre_renvoi_clinique_sommeil",
+  "index.video_titel": "Voyez comment ça marche (1 min 45)",
+  "index.video_noot": "Vidéo sans son, avec des données fictives : info, lettre de renvoi, création du PDF et passage à Consult.",
+  "index.video_niet": "Votre navigateur ne peut pas lire cette vidéo."
 }

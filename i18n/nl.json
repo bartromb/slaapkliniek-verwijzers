@@ -9,7 +9,6 @@
   "footer.privacy": "Er worden via deze website geen gegevens naar onze server verzonden of opgeslagen.",
   "footer.broncode": "Broncode",
   "footer.licentie": "BSD-3-licentie",
-
   "index.titel": "Slaaponderzoek aanvragen",
   "index.intro": "Deze pagina helpt huisartsen en andere artsen om vlot een polygrafie (PG) of polysomnografie (PSG) aan te vragen in de Slaapkliniek. U vult hier een gestructureerde verwijsbrief in, maakt er in uw browser een PDF van en boekt de afspraak zelf in Nexuzhealth Consult.",
   "index.stappen_titel": "Zo werkt het",
@@ -32,7 +31,6 @@
   "index.contact_tel": "Secretariaat",
   "index.contact_ehealthbox": "eHealthBox",
   "index.contact_email": "E-mail (niet voor patiëntgegevens)",
-
   "aanvraag.titel": "Verwijsbrief slaaponderzoek",
   "aanvraag.intro": "Vul de velden in en klik onderaan op “Maak verwijsbrief (PDF)”. De PDF wordt in uw browser gemaakt; er wordt niets naar onze server verzonden.",
   "aanvraag.verplicht": "Verplichte velden zijn gemarkeerd met *.",
@@ -122,7 +120,6 @@
   "aanvraag.volgende_titel": "Volgende stap",
   "aanvraag.volgende_tekst": "Voeg deze PDF toe als bijlage bij uw afspraak in Nexuzhealth Consult.",
   "aanvraag.volgende_knop": "Naar het stappenplan Consult",
-
   "consult.titel": "Afspraak boeken in Nexuzhealth Consult",
   "consult.intro": "Nexuzhealth Consult is het gratis portaal van nexuzhealth voor externe zorgverleners. U logt in met itsme of eID, zoekt de patiënt, kiest de dienst en een tijdslot en voegt de verwijsbrief toe. De afspraak staat dan rechtstreeks in de agenda van de Slaapkliniek.",
   "consult.knop_login": "Inloggen op Consult",
@@ -142,7 +139,6 @@
   "consult.terugval_tel": "Secretariaat",
   "consult.terugval_ehealthbox": "eHealthBox",
   "consult.geen_patientdata": "Stuur nooit patiëntgegevens via gewone e-mail.",
-
   "js.val_verplicht": "Vul de verplichte velden in: {velden}",
   "js.val_riziv": "Het RIZIV-nummer heeft het formaat 1-23456-78-901.",
   "js.val_geboortedatum": "Geef een geldige geboortedatum in het verleden op.",
@@ -155,7 +151,6 @@
   "js.keuze_onvolledig": "Vul de STOP-BANG-items in voor een suggestie.",
   "js.ess_interpretatie_normaal": "normaal (0–10)",
   "js.ess_interpretatie_verhoogd": "verhoogde slaperigheid (11–24)",
-
   "js.pdf_kop": "Aanvraag slaaponderzoek — Slaapkliniek",
   "js.pdf_datum": "Datum",
   "js.pdf_verwijzer": "Verwijzer",
@@ -184,5 +179,8 @@
   "js.pdf_ja": "ja",
   "js.pdf_nee": "nee",
   "js.pdf_voettekst": "Gemaakt in de browser van de verwijzer; er zijn geen gegevens naar de website verzonden.",
-  "js.pdf_bestandsnaam": "verwijsbrief_slaapkliniek"
+  "js.pdf_bestandsnaam": "verwijsbrief_slaapkliniek",
+  "index.video_titel": "Bekijk hoe het werkt (1 min 45)",
+  "index.video_noot": "Filmpje zonder geluid, met fictieve gegevens: info, verwijsbrief invullen, PDF maken en de stap naar Consult.",
+  "index.video_niet": "Uw browser kan deze video niet afspelen."
 }

@@ -11,6 +11,20 @@ Ontwerp en randvoorwaarden: [`CLAUDE.md`](CLAUDE.md). Los van
 [YASAFlaskified](https://github.com/bartromb/YASAFlaskified); de landingspagina van
 slaapkliniek.be linkt hierheen met de tegel "Onderzoek aanvragen".
 
+## Demo
+
+Filmpje (1 min 45, zonder geluid, fictieve gegevens) van het hele proces — info, verwijsbrief
+invullen, PDF maken, stap naar Consult: op de infopagina van de site
+(`/nl/#video`) en als asset bij de
+[GitHub-release v0.1.0](https://github.com/bartromb/slaapkliniek-verwijzers/releases/tag/v0.1.0),
+samen met de voorbeeld-PDF. Opgenomen met `tools/record_demo.py` (Playwright + ffmpeg tegen de
+live site); opnieuw opnemen:
+
+```bash
+.venv/bin/pip install playwright imageio-ffmpeg pymupdf
+.venv/bin/python tools/record_demo.py --lang nl --chrome <pad naar chrome> --out videos/
+```
+
 ## Structuur
 
 - `config/site.json` — campussen, contact, Consult-URL's en -dienstnaam, drempels keuzehulp,
