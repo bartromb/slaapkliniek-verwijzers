@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}{{ t('index.titel') }} — {{ t('site.naam') }}{% endblock %}
+{% block inhoud %}
+<section class="hero">
+  <h1>{{ t('index.titel') }}</h1>
+  <p class="lead">{{ t('index.intro') }}</p>
+  <div class="cta-rij">
+    <a class="knop primair" href="{{ base_path }}{{ lang }}/aanvraag/">{{ t('index.cta_aanvraag') }}</a>
+    <a class="knop" href="{{ base_path }}{{ lang }}/consult/">{{ t('index.cta_consult') }}</a>
+  </div>
+</section>
+
+<section aria-labelledby="stappen">
+  <h2 id="stappen">{{ t('index.stappen_titel') }}</h2>
+  <ol class="stappen">
+    <li>{{ t('index.stap1') }}</li>
+    <li>{{ t('index.stap2') }}</li>
+    <li>{{ t('index.stap3') }}</li>
+  </ol>
+</section>
+
+<section aria-labelledby="pgpsg">
+  <h2 id="pgpsg">{{ t('index.pg_psg_titel') }}</h2>
+  <div class="twee">
+    <article class="kaart">
+      <h3>{{ t('index.pg_titel') }}</h3>
+      <p>{{ t('index.pg_tekst') }}</p>
+    </article>
+    <article class="kaart">
+      <h3>{{ t('index.psg_titel') }}</h3>
+      <p>{{ t('index.psg_tekst') }}</p>
+    </article>
+  </div>
+  <p class="noot">{{ t('index.keuzehulp_noot') }}</p>
+</section>
+
+{% if campussen %}
+<section aria-labelledby="campussen">
+  <h2 id="campussen">{{ t('index.campussen_titel') }}</h2>
+  <ul class="campussen">
+    {% for c in campussen %}
+    <li class="kaart">
+      <h3>{{ c.naam }}</h3>
+      {% if c.adres %}<p>{{ c.adres }}</p>{% endif %}
+      <p class="tags">{% if c.pg %}<span class="tag">{{ t('index.campus_pg') }}</span>{% endif %}{% if c.psg %}<span class="tag">{{ t('index.campus_psg') }}</span>{% endif %}</p>
+      {% if c.wachttijd_weken %}<p class="klein">{{ t('index.campus_wachttijd') | replace('{weken}', c.wachttijd_weken | string) }}</p>{% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+{% if contact %}
+<section aria-labelledby="contact">
+  <h2 id="contact">{{ t('index.contact_titel') }}</h2>
+  <ul class="contact">
+    {% if contact.secretariaat_tel %}<li>{{ t('index.contact_tel') }}: <a href="tel:{{ contact.secretariaat_tel | replace(' ', '') }}">{{ contact.secretariaat_tel }}</a></li>{% endif %}
+    {% if contact.ehealthbox %}<li>{{ t('index.contact_ehealthbox') }}: {{ contact.ehealthbox }}</li>{% endif %}
+    {% if contact.email_algemeen %}<li>{{ t('index.contact_email') }}: <a href="mailto:{{ contact.email_algemeen }}">{{ contact.email_algemeen }}</a></li>{% endif %}
+  </ul>
+</section>
+{% endif %}
+{% endblock %}

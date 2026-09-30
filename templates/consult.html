@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}{{ t('consult.titel') }} — {{ t('site.naam') }}{% endblock %}
+{% block inhoud %}
+<h1>{{ t('consult.titel') }}</h1>
+<p class="lead">{{ t('consult.intro') }}</p>
+
+<div class="cta-rij">
+  {% if consult.deeplink_slaapkliniek %}
+  <a class="knop primair" href="{{ consult.deeplink_slaapkliniek }}" target="_blank" rel="noopener">{{ t('consult.knop_deeplink') }}</a>
+  <a class="knop" href="{{ consult.login_url }}" target="_blank" rel="noopener">{{ t('consult.knop_login') }}</a>
+  {% else %}
+  <a class="knop primair" href="{{ consult.login_url }}" target="_blank" rel="noopener">{{ t('consult.knop_login') }}</a>
+  {% endif %}
+  <a class="knop" href="{{ consult.account_url }}" target="_blank" rel="noopener">{{ t('consult.knop_account') }}</a>
+</div>
+
+<section aria-labelledby="stappen">
+  <h2 id="stappen">{{ t('consult.stappen_titel') }}</h2>
+  <ol class="stappen">
+    <li>{{ t('consult.stap1') }}</li>
+    <li>{{ t('consult.stap2') }}</li>
+    <li>{{ t('consult.stap3') }}</li>
+    <li>{% if consult.dienstnaam %}{{ t('consult.stap4') | replace('{dienst}', consult.dienstnaam) }}{% else %}{{ t('consult.stap4_zonder_dienst') }}{% endif %}</li>
+    <li>{{ t('consult.stap5') }}</li>
+    <li>{{ t('consult.stap6') }}</li>
+    <li>{{ t('consult.stap7') }}</li>
+  </ol>
+</section>
+
+<section class="kaart terugval" aria-labelledby="terugval">
+  <h2 id="terugval">{{ t('consult.terugval_titel') }}</h2>
+  <p>{{ t('consult.terugval_tekst') }}</p>
+  <ul class="contact">
+    {% if contact.secretariaat_tel %}<li>{{ t('consult.terugval_tel') }}: <a href="tel:{{ contact.secretariaat_tel | replace(' ', '') }}">{{ contact.secretariaat_tel }}</a></li>{% endif %}
+    {% if contact.ehealthbox %}<li>{{ t('consult.terugval_ehealthbox') }}: {{ contact.ehealthbox }}</li>{% endif %}
+  </ul>
+  <p class="noot">{{ t('consult.geen_patientdata') }}</p>
+</section>
+{% endblock %}

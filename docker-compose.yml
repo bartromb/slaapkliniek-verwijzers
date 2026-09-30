@@ -1,0 +1,21 @@
+# verwijzers.slaapkliniek.be — statische site achter Nginx Proxy Manager (NPM).
+# Geen poort naar buiten: NPM koppelt de host aan verwijzers:80 op het gedeelde netwerk.
+# Netwerknaam nakijken met `docker network ls` en zetten in .env (NPM_NETWORK=...).
+services:
+  verwijzers:
+    build: .
+    image: slaapkliniek-verwijzers:latest
+    container_name: verwijzers
+    restart: unless-stopped
+    networks:
+      - npm
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/nl/"]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+
+networks:
+  npm:
+    external: true
+    name: ${NPM_NETWORK:-npm_default}

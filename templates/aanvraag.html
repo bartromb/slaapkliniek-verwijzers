@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block title %}{{ t('aanvraag.titel') }} — {{ t('site.naam') }}{% endblock %}
+{% block inhoud %}
+<h1>{{ t('aanvraag.titel') }}</h1>
+<p class="lead">{{ t('aanvraag.intro') }}</p>
+<p class="klein">{{ t('aanvraag.verplicht') }}</p>
+
+<div id="melding" class="melding" role="alert" aria-live="polite" hidden></div>
+
+<form id="verwijsbrief" novalidate autocomplete="off">
+
+  <fieldset>
+    <legend>{{ t('aanvraag.sectie_verwijzer') }}</legend>
+    <div class="veld"><label for="verwijzer_naam">{{ t('aanvraag.verwijzer_naam') }} *</label><input id="verwijzer_naam" name="verwijzer_naam" type="text" required data-label="{{ t('aanvraag.verwijzer_naam') }}"></div>
+    <div class="veld"><label for="verwijzer_riziv">{{ t('aanvraag.verwijzer_riziv') }} *</label><input id="verwijzer_riziv" name="verwijzer_riziv" type="text" inputmode="numeric" placeholder="1-23456-78-901" required data-label="{{ t('aanvraag.verwijzer_riziv') }}" aria-describedby="riziv_hint"><small id="riziv_hint">{{ t('aanvraag.verwijzer_riziv_hint') }}</small></div>
+    <div class="veld"><label for="verwijzer_adres">{{ t('aanvraag.verwijzer_adres') }}</label><input id="verwijzer_adres" name="verwijzer_adres" type="text"></div>
+    <div class="veld"><label for="verwijzer_tel">{{ t('aanvraag.verwijzer_tel') }}</label><input id="verwijzer_tel" name="verwijzer_tel" type="tel"></div>
+  </fieldset>
+
+  <fieldset>
+    <legend>{{ t('aanvraag.sectie_patient') }}</legend>
+    <div class="veld"><label for="patient_naam">{{ t('aanvraag.patient_naam') }} *</label><input id="patient_naam" name="patient_naam" type="text" required data-label="{{ t('aanvraag.patient_naam') }}"></div>
+    <div class="veld"><label for="patient_geboortedatum">{{ t('aanvraag.patient_geboortedatum') }} *</label><input id="patient_geboortedatum" name="patient_geboortedatum" type="date" required data-label="{{ t('aanvraag.patient_geboortedatum') }}"></div>
+    <div class="veld">
+      <span class="label" id="geslacht_label">{{ t('aanvraag.patient_geslacht') }}</span>
+      <div class="radios" role="radiogroup" aria-labelledby="geslacht_label">
+        <label><input type="radio" name="patient_geslacht" value="m"> {{ t('aanvraag.geslacht_m') }}</label>
+        <label><input type="radio" name="patient_geslacht" value="v"> {{ t('aanvraag.geslacht_v') }}</label>
+        <label><input type="radio" name="patient_geslacht" value="x"> {{ t('aanvraag.geslacht_x') }}</label>
+      </div>
+    </div>
+    <div class="veld"><label for="patient_rrn">{{ t('aanvraag.patient_rrn') }}</label><input id="patient_rrn" name="patient_rrn" type="text" inputmode="numeric" aria-describedby="rrn_hint"><small id="rrn_hint">{{ t('aanvraag.patient_rrn_hint') }}</small></div>
+  </fieldset>
+
+  <fieldset>
+    <legend>{{ t('aanvraag.sectie_onderzoek') }} *</legend>
+    <div class="radios" role="radiogroup" aria-label="{{ t('aanvraag.sectie_onderzoek') }}">
+      <label><input type="radio" name="onderzoek" value="pg" data-label="{{ t('aanvraag.sectie_onderzoek') }}"> {{ t('aanvraag.onderzoek_pg') }}</label>
+      <label><input type="radio" name="onderzoek" value="psg"> {{ t('aanvraag.onderzoek_psg') }}</label>
+      <label><input type="radio" name="onderzoek" value="arts"> {{ t('aanvraag.onderzoek_arts') }}</label>
+    </div>
+    <div class="veld"><label for="campus">{{ t('aanvraag.campus') }}</label>
+      <select id="campus" name="campus">
+        <option value="">{{ t('aanvraag.campus_geen') }}</option>
+        {% for c in campussen %}<option value="{{ c.id }}">{{ c.naam }}</option>{% endfor %}
+      </select></div>
+  </fieldset>
+
+  <fieldset>
+    <legend>{{ t('aanvraag.sectie_urgentie') }}</legend>
+    <div class="radios" role="radiogroup" aria-label="{{ t('aanvraag.sectie_urgentie') }}">
+      <label><input type="radio" name="urgentie" value="normaal" checked> {{ t('aanvraag.urgentie_normaal') }}</label>
+      <label><input type="radio" name="urgentie" value="verhoogd"> {{ t('aanvraag.urgentie_verhoogd') }}</label>
+    </div>
+    <div class="veld"><label for="urgentie_toelichting">{{ t('aanvraag.urgentie_toelichting') }}</label><textarea id="urgentie_toelichting" name="urgentie_toelichting" rows="2"></textarea></div>
+  </fieldset>
+
+  <fieldset>
+    <legend>{{ t('aanvraag.sectie_klinisch') }}</legend>
+    <div class="veld">
+      <span class="label" id="klachten_label">{{ t('aanvraag.klachten') }}</span>
+      <div class="checks" role="group" aria-labelledby="klachten_label">
+        {% for k in ['snurken','apneus','slaperigheid','dyspneu','nycturie','hoofdpijn','nietherstellend','slapeloosheid','benen','parasomnie'] %}
+        <label><input type="checkbox" name="klacht" value="{{ k }}"> {{ t('aanvraag.klacht_' ~ k) }}</label>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="rij">
+      <div class="veld"><label for="lengte">{{ t('aanvraag.lengte') }}</label><input id="lengte" name="lengte" type="number" min="100" max="250" step="1" inputmode="numeric"></div>
+      <div class="veld"><label for="gewicht">{{ t('aanvraag.gewicht') }}</label><input id="gewicht" name="gewicht" type="number" min="20" max="400" step="0.1" inputmode="decimal"></div>
+      <div class="veld"><label for="bmi">{{ t('aanvraag.bmi') }}</label><output id="bmi" name="bmi" for="lengte gewicht">—</output></div>
+      <div class="veld"><label for="hals">{{ t('aanvraag.hals') }}</label><input id="hals" name="hals" type="number" min="20" max="80" step="0.5" inputmode="decimal"></div>
+    </div>
+
+    <div class="subblok" role="group" aria-labelledby="ess_titel">
+      <h3 id="ess_titel">{{ t('aanvraag.ess_titel') }}</h3>
+      <p class="klein">{{ t('aanvraag.ess_intro') }}</p>
+      <table class="ess">
+        <thead><tr><th scope="col"></th><th scope="col">0</th><th scope="col">1</th><th scope="col">2</th><th scope="col">3</th></tr></thead>
+        <tbody>
+        {% for i in range(1, 9) %}
+        <tr><th scope="row" id="ess_{{ i }}_label">{{ t('aanvraag.ess_' ~ i) }}</th>
+          {% for w in range(0, 4) %}<td><input type="radio" name="ess_{{ i }}" value="{{ w }}" aria-labelledby="ess_{{ i }}_label" aria-label="{{ w }}"></td>{% endfor %}
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <p class="totaal">{{ t('aanvraag.ess_totaal') }}: <output id="ess_totaal">—</output> <span id="ess_interpretatie" class="klein"></span></p>
+    </div>
+
+    <div class="subblok" role="group" aria-labelledby="sb_titel">
+      <h3 id="sb_titel">{{ t('aanvraag.stopbang_titel') }}</h3>
+      <p class="klein">{{ t('aanvraag.stopbang_intro') }}</p>
+      <div class="checks">
+        {% for k in ['s','t','o','p'] %}<label><input type="checkbox" name="sb_{{ k }}" class="sb"> {{ t('aanvraag.sb_' ~ k) }}</label>{% endfor %}
+        {% for k in ['b','a','n','g'] %}<label><input type="checkbox" name="sb_{{ k }}" class="sb afgeleid"> {{ t('aanvraag.sb_' ~ k) }}</label>{% endfor %}
+      </div>
+      <p class="totaal">{{ t('aanvraag.stopbang_totaal') }}: <output id="sb_totaal">0</output> / 8</p>
+    </div>
+
+    <div class="veld">
+      <span class="label" id="com_label">{{ t('aanvraag.comorbiditeit') }}</span>
+      <div class="checks" role="group" aria-labelledby="com_label">
+        {% for k in ['hartfalen','vkf','cva','copd','neuromusculair','opioiden','nier','hypertensie','andere_slaapstoornis'] %}
+        <label><input type="checkbox" name="com" value="{{ k }}"> {{ t('aanvraag.com_' ~ k) }}</label>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="veld"><label for="medicatie">{{ t('aanvraag.medicatie') }}</label><textarea id="medicatie" name="medicatie" rows="2"></textarea></div>
+    <div class="veld">
+      <span class="label" id="eerder_label">{{ t('aanvraag.eerder') }}</span>
+      <div class="radios" role="radiogroup" aria-labelledby="eerder_label">
+        <label><input type="radio" name="eerder" value="nee" checked> {{ t('aanvraag.eerder_nee') }}</label>
+        <label><input type="radio" name="eerder" value="ja"> {{ t('aanvraag.eerder_ja') }}</label>
+      </div>
+      <label for="eerder_toelichting" class="klein">{{ t('aanvraag.eerder_toelichting') }}</label><textarea id="eerder_toelichting" name="eerder_toelichting" rows="2"></textarea>
+    </div>
+    <div class="veld"><label for="vraagstelling">{{ t('aanvraag.vraagstelling') }} *</label><textarea id="vraagstelling" name="vraagstelling" rows="3" required data-label="{{ t('aanvraag.vraagstelling') }}"></textarea></div>
+  </fieldset>
+
+  <section class="kaart keuzehulp" aria-labelledby="keuzehulp_titel">
+    <h2 id="keuzehulp_titel">{{ t('aanvraag.keuzehulp_titel') }}</h2>
+    <p id="keuzehulp_tekst" aria-live="polite">{{ t('js.keuze_onvolledig') }}</p>
+    <p class="klein">{{ t('aanvraag.keuzehulp_arts') }}</p>
+  </section>
+
+  <div class="knoppen">
+    <button type="button" id="knop_pdf" class="knop primair">{{ t('aanvraag.knop_pdf') }}</button>
+    <button type="button" id="knop_wissen" class="knop">{{ t('aanvraag.knop_wissen') }}</button>
+  </div>
+</form>
+
+<section id="volgende" class="kaart volgende" hidden aria-labelledby="volgende_titel">
+  <h2 id="volgende_titel">{{ t('aanvraag.volgende_titel') }}</h2>
+  <p>{{ t('aanvraag.volgende_tekst') }}</p>
+  <a class="knop primair" href="{{ base_path }}{{ lang }}/consult/">{{ t('aanvraag.volgende_knop') }}</a>
+</section>
+{% endblock %}
+{% block scripts %}
+<script type="application/json" id="i18n">{{ js_i18n | tojson }}</script>
+<script type="application/json" id="site">{{ js_site | tojson }}</script>
+<script src="{{ base_path }}vendor/jspdf.umd.min.js"></script>
+<script src="{{ base_path }}static/js/scores.js"></script>
+<script src="{{ base_path }}static/js/pdf.js"></script>
+<script src="{{ base_path }}static/js/form.js"></script>
+{% endblock %}

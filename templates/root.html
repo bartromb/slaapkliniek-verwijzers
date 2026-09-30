@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="nl" data-base-path="{{ base_path }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="refresh" content="1; url={{ base_path }}nl/">
+<title>{{ site_naam }}</title>
+<link rel="stylesheet" href="{{ base_path }}static/css/verwijzers.css">
+{% for code in langs %}<link rel="alternate" hreflang="{{ code }}" href="{{ site_url }}{{ base_path }}{{ code }}/">
+{% endfor %}</head>
+<body>
+<main class="wrap">
+  <h1>{{ site_naam }}</h1>
+  <ul class="contact">
+    {% for code, naam in taalnamen %}<li><a href="{{ base_path }}{{ code }}/" lang="{{ code }}" hreflang="{{ code }}">{{ naam }}</a></li>
+    {% endfor %}
+  </ul>
+</main>
+<script src="{{ base_path }}static/js/lang.js"></script>
+</body>
+</html>

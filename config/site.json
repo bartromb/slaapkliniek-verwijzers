@@ -1,0 +1,25 @@
+{
+  "base_path": "/",
+  "site_url": "https://verwijzers.slaapkliniek.be",
+  "terug_url": "https://slaapkliniek.be/start",
+  "consult": {
+    "login_url": "https://www.nexuzhealth.com/nl/nexuzhealth-consult",
+    "account_url": "https://www.nexuzhealth.com/nl/nexuzhealth-consult",
+    "deeplink_slaapkliniek": null,
+    "dienstnaam": "<exacte dienstnaam zoals zichtbaar in Consult>"
+  },
+  "campussen": [
+    { "id": "wetteren",    "naam": "Campus Wetteren",    "pg": true, "psg": true, "adres": "<...>", "wachttijd_weken": null },
+    { "id": "moorselbaan", "naam": "Campus Moorselbaan", "pg": true, "psg": true, "adres": "<...>", "wachttijd_weken": null }
+  ],
+  "contact": {
+    "secretariaat_tel": "<...>",
+    "ehealthbox": "<...>",
+    "email_algemeen": "<niet voor patiëntdata>"
+  },
+  "keuzehulp": {
+    "stopbang_hoge_pretest": 5,
+    "comorbiditeit_naar_psg": ["hartfalen", "cva", "copd", "neuromusculair", "opioiden", "andere_slaapstoornis"]
+  },
+  "toegestane_externe_hosts": ["www.nexuzhealth.com", "nexuzhealth.com", "slaapkliniek.be", "www.slaapkliniek.be", "github.com"]
+}
