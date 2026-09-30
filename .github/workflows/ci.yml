@@ -19,3 +19,5 @@ jobs:
       - run: node tests/test_scores.js
       - name: docker-image bouwt
         run: docker build -t slaapkliniek-verwijzers:ci .
+      - name: nginx-config is geldig in het image
+        run: docker run --rm slaapkliniek-verwijzers:ci nginx -t
