@@ -26,7 +26,13 @@ Controle: `getent ahostsv4 verwijzers.slaapkliniek.be` moet het serveradres geve
 
 ## 3. Nginx Proxy Manager
 
-Hosts → Proxy Hosts → Add Proxy Host:
+Via de API (idempotent, wachtwoord alleen uit de omgeving):
+
+```bash
+ssh root@dedodedodo.be "cd /data/verwijzers && git pull -q && NPM_EMAIL=<admin-e-mail> NPM_PASSWORD='<wachtwoord>' bash npm_proxyhost.sh"
+```
+
+Of met de hand: Hosts → Proxy Hosts → Add Proxy Host:
 
 | veld | waarde |
 |---|---|
