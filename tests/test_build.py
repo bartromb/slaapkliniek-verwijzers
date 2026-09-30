@@ -193,3 +193,12 @@ def test_consult_login_gaat_rechtstreeks_naar_het_portaal_per_taal(dist):
         assert f'href="https://mynexuzpro.nexuzhealth.be/?language={lang}"' in html, lang
         assert f"lang={lang}&amp;target=clinicus" in html, lang
         assert "{lang}" not in html
+
+
+def test_aliasdomeinen_verwijzen_naar_het_canonieke_portaal_per_taal():
+    conf = (ROOT / "nginx" / "default.conf").read_text(encoding="utf-8")
+    for d in ("slaapstudie.be", "slaapstudie.eu", "slaapstudie.com", "etudedusommeil.be", "etudedusommeil.eu", "etudedusommeil.com"):
+        assert f" {d} " in conf.replace("\n", " ") and f"www.{d}" in conf, d
+    assert "return 301 https://verwijzers.slaapkliniek.be/$alias_lang$request_uri" in conf
+    assert "~*etudedusommeil\\." in conf and "default                 nl" in conf
+    assert "listen 80 default_server" in conf, "het portaal zelf moet de default server blijven"
