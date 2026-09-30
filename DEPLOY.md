@@ -1,0 +1,55 @@
+# Deploy — verwijzers.slaapkliniek.be
+
+Drie onderdelen, in deze volgorde. Alleen stap 2 (DNS) en de SSL-aanvraag in stap 3 zijn
+handmatig; de rest doet `deploy.sh`.
+
+## 1. Container op de Hetzner-server
+
+```bash
+ssh root@dedodedodo.be 'bash -s' < deploy.sh
+```
+
+Kloont naar `/data/verwijzers` (daarna `git pull`), bouwt het image (`--no-cache`, want de
+pagina's worden in de build-stage gerenderd), start de container `verwijzers` op het netwerk van
+Nginx Proxy Manager (`NPM_NETWORK` in `/data/verwijzers/.env`, automatisch geraden uit de
+NPM-container) en controleert vanuit de container de titel en de CSP-header. De container
+publiceert **geen** poort.
+
+## 2. DNS (Gandi, LiveDNS)
+
+| type | naam | waarde | TTL |
+|---|---|---|---|
+| A | `verwijzers` | `65.108.230.243` | 1800 |
+
+Controle: `getent ahostsv4 verwijzers.slaapkliniek.be` moet het serveradres geven vóór stap 3
+(Let's Encrypt doet een HTTP-01-challenge en heeft de DNS nodig).
+
+## 3. Nginx Proxy Manager
+
+Hosts → Proxy Hosts → Add Proxy Host:
+
+| veld | waarde |
+|---|---|
+| Domain Names | `verwijzers.slaapkliniek.be` |
+| Scheme | `http` |
+| Forward Hostname / IP | `verwijzers` |
+| Forward Port | `80` |
+| Cache Assets | uit (de site zet zelf `Cache-Control`) |
+| Block Common Exploits | aan |
+| Websockets Support | uit |
+| SSL → certificaat | Request a new SSL Certificate (Let's Encrypt) |
+| Force SSL | aan |
+| HTTP/2 Support | aan |
+| HSTS Enabled | aan |
+
+Geen custom locations; de CSP en overige headers komen uit de container zelf. Controle na
+afloop: `curl -sI https://verwijzers.slaapkliniek.be/nl/aanvraag/ | grep -i "content-security\|cache-control"`
+moet de strikte CSP en `no-store` tonen.
+
+## Terugdraaien
+
+```bash
+ssh root@dedodedodo.be "cd /data/verwijzers && git checkout <vorige tag of commit> && docker compose build --no-cache && docker compose up -d"
+```
+
+De proxyhost in NPM verwijderen (of uitschakelen) haalt de site offline zonder de container aan te raken.
