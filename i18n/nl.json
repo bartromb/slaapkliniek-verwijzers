@@ -182,5 +182,7 @@
   "js.pdf_bestandsnaam": "verwijsbrief_slaapkliniek",
   "index.video_titel": "Bekijk hoe het werkt (video, 2 min)",
   "index.video_noot": "Filmpje zonder geluid, met fictieve gegevens: info, verwijsbrief invullen, PDF maken en de stap naar Consult.",
-  "index.video_niet": "Uw browser kan deze video niet afspelen."
+  "index.video_niet": "Uw browser kan deze video niet afspelen.",
+  "site.merk": "Slaapkliniek",
+  "site.merk_sub": "voor verwijzers"
 }

@@ -182,5 +182,7 @@
   "js.pdf_bestandsnaam": "referral_sleepclinic",
   "index.video_titel": "See how it works (video, 2 min)",
   "index.video_noot": "Silent video with fictitious data: info, filling in the referral letter, creating the PDF and the step to Consult.",
-  "index.video_niet": "Your browser cannot play this video."
+  "index.video_niet": "Your browser cannot play this video.",
+  "site.merk": "Sleep Clinic",
+  "site.merk_sub": "for referring physicians"
 }

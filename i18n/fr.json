@@ -182,5 +182,7 @@
   "js.pdf_bestandsnaam": "lettre_renvoi_clinique_sommeil",
   "index.video_titel": "Voyez comment ça marche (vidéo, 2 min)",
   "index.video_noot": "Vidéo sans son, avec des données fictives : info, lettre de renvoi, création du PDF et passage à Consult.",
-  "index.video_niet": "Votre navigateur ne peut pas lire cette vidéo."
+  "index.video_niet": "Votre navigateur ne peut pas lire cette vidéo.",
+  "site.merk": "Clinique du sommeil",
+  "site.merk_sub": "pour les prescripteurs"
 }

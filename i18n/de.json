@@ -182,5 +182,7 @@
   "js.pdf_bestandsnaam": "ueberweisung_schlafklinik",
   "index.video_titel": "So funktioniert es (Video, 2 Min)",
   "index.video_noot": "Video ohne Ton, mit fiktiven Daten: Info, Überweisungsschreiben ausfüllen, PDF erstellen und der Schritt zu Consult.",
-  "index.video_niet": "Ihr Browser kann dieses Video nicht abspielen."
+  "index.video_niet": "Ihr Browser kann dieses Video nicht abspielen.",
+  "site.merk": "Schlafklinik",
+  "site.merk_sub": "für Zuweiser"
 }
