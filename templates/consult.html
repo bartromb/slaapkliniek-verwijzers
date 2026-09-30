@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}{{ t('consult.titel') }} — {{ t('site.naam') }}{% endblock %}
 {% block inhoud %}
+<div class="pagina">
 <h1>{{ t('consult.titel') }}</h1>
 <p class="lead">{{ t('consult.intro') }}</p>
 
@@ -36,4 +37,5 @@
   </ul>
   <p class="noot">{{ t('consult.geen_patientdata') }}</p>
 </section>
+</div>
 {% endblock %}

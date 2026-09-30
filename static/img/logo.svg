@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Slaapkliniek">
-  <path d="M0 0h52a12 12 0 0 1 12 12v40A12 12 0 0 1 52 64H0z" fill="#e20015"/>
-  <path d="M41.5 14.5a15 15 0 1 0 8.2 27.6A17.5 17.5 0 0 1 41.5 14.5z" fill="#fff"/>
-  <circle cx="21" cy="24" r="2.4" fill="#fff"/><circle cx="16" cy="36" r="1.8" fill="#fff"/><circle cx="26" cy="44" r="1.6" fill="#fff"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40" role="img" aria-label="">
+  <rect width="40" height="40" rx="11" fill="#E20015"/>
+  <path d="M22.5 7.5a12.5 12.5 0 1 0 0 25 10.2 10.2 0 0 1 0-25z" fill="#fff"/>
+  <circle cx="13" cy="12" r="1.6" fill="#fff"/>
 </svg>

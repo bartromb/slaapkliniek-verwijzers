@@ -2,21 +2,24 @@
 {% block title %}{{ t('index.titel') }} — {{ t('site.naam') }}{% endblock %}
 {% block inhoud %}
 <section class="hero">
-  <h1>{{ t('index.titel') }}</h1>
-  <p class="lead">{{ t('index.intro') }}</p>
-  <div class="cta-rij">
-    <a class="knop primair" href="{{ base_path }}{{ lang }}/aanvraag/">{{ t('index.cta_aanvraag') }}</a>
-    <a class="knop" href="{{ base_path }}{{ lang }}/consult/">{{ t('index.cta_consult') }}</a>
+  <div class="hero-inner">
+    <div>
+      <h1>{{ t('index.titel') }}</h1>
+      <p class="lead">{{ t('index.intro') }}</p>
+      <div class="cta-rij">
+        <a class="knop primair" href="{{ base_path }}{{ lang }}/aanvraag/">{{ t('index.cta_aanvraag') }}</a>
+        <a class="knop" href="{{ base_path }}{{ lang }}/consult/">{{ t('index.cta_consult') }}</a>
+      </div>
+    </div>
+    <aside class="stappen-kaart" aria-labelledby="stappen">
+      <h2 id="stappen">{{ t('index.stappen_titel') }}</h2>
+      <ol class="stappen">
+        <li>{{ t('index.stap1') }}</li>
+        <li>{{ t('index.stap2') }}</li>
+        <li>{{ t('index.stap3') }}</li>
+      </ol>
+    </aside>
   </div>
-</section>
-
-<section aria-labelledby="stappen">
-  <h2 id="stappen">{{ t('index.stappen_titel') }}</h2>
-  <ol class="stappen">
-    <li>{{ t('index.stap1') }}</li>
-    <li>{{ t('index.stap2') }}</li>
-    <li>{{ t('index.stap3') }}</li>
-  </ol>
 </section>
 
 <section aria-labelledby="pgpsg">

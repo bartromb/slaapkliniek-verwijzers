@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}{{ t('aanvraag.titel') }} — {{ t('site.naam') }}{% endblock %}
 {% block inhoud %}
+<div class="pagina">
 <h1>{{ t('aanvraag.titel') }}</h1>
 <p class="lead">{{ t('aanvraag.intro') }}</p>
 <p class="klein">{{ t('aanvraag.verplicht') }}</p>
@@ -135,6 +136,7 @@
   <p>{{ t('aanvraag.volgende_tekst') }}</p>
   <a class="knop primair" href="{{ base_path }}{{ lang }}/consult/">{{ t('aanvraag.volgende_knop') }}</a>
 </section>
+</div>
 {% endblock %}
 {% block scripts %}
 <script type="application/json" id="i18n">{{ js_i18n | tojson }}</script>
