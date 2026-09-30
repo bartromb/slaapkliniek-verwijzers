@@ -10,18 +10,42 @@
   },
   "campussen": [
     {
-      "id": "wetteren",
-      "naam": "Campus Wetteren",
-      "pg": true,
-      "psg": true,
+      "id": "aalst-moorselbaan",
+      "naam": "Campus Aalst — Moorselbaan",
+      "pg": null,
+      "psg": null,
       "adres": "<...>",
       "wachttijd_weken": null
     },
     {
-      "id": "moorselbaan",
-      "naam": "Campus Moorselbaan",
-      "pg": true,
-      "psg": true,
+      "id": "aalst-merestraat",
+      "naam": "Campus Aalst — Merestraat",
+      "pg": null,
+      "psg": null,
+      "adres": "<...>",
+      "wachttijd_weken": null
+    },
+    {
+      "id": "asse",
+      "naam": "Campus Asse",
+      "pg": null,
+      "psg": null,
+      "adres": "<...>",
+      "wachttijd_weken": null
+    },
+    {
+      "id": "wetteren",
+      "naam": "Campus Wetteren",
+      "pg": null,
+      "psg": null,
+      "adres": "<...>",
+      "wachttijd_weken": null
+    },
+    {
+      "id": "geraardsbergen",
+      "naam": "Campus Geraardsbergen",
+      "pg": null,
+      "psg": null,
       "adres": "<...>",
       "wachttijd_weken": null
     }
@@ -51,5 +75,6 @@
     "mynexuzpro.nexuzhealth.be",
     "forms.nexuzhealth.be"
   ],
-  "_comment_consult": "login_url = het pro-portaal zelf (gaat rechtstreeks de Shibboleth/itsme-login in, geen tussenpagina); {lang} wordt per taal ingevuld door build.py"
+  "_comment_consult": "login_url = het pro-portaal zelf (gaat rechtstreeks de Shibboleth/itsme-login in, geen tussenpagina); {lang} wordt per taal ingevuld door build.py",
+  "_comment_campussen": "pg/psg: true toont het label op de infopagina, null verbergt het tot bekend is welke campus wat doet (open vraag §15.4); adres en wachttijd_weken idem."
 }

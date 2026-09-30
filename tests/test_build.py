@@ -202,3 +202,15 @@ def test_aliasdomeinen_verwijzen_naar_het_canonieke_portaal_per_taal():
     assert "return 301 https://verwijzers.slaapkliniek.be/$alias_lang$request_uri" in conf
     assert "~*etudedusommeil\\." in conf and "default                 nl" in conf
     assert "listen 80 default_server" in conf, "het portaal zelf moet de default server blijven"
+
+
+def test_campussen_op_infopagina_en_in_dropdown(dist):
+    site = _site()
+    namen = [c["naam"] for c in site["campussen"]]
+    assert namen == ["Campus Aalst — Moorselbaan", "Campus Aalst — Merestraat", "Campus Asse", "Campus Wetteren", "Campus Geraardsbergen"]
+    for lang in LANGS:
+        info = (dist / lang / "index.html").read_text(encoding="utf-8")
+        form = (dist / lang / "aanvraag" / "index.html").read_text(encoding="utf-8")
+        for naam in namen:
+            assert naam in info and naam in form, (lang, naam)
+        assert 'value="aalst-moorselbaan"' in form
