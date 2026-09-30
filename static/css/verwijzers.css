@@ -29,14 +29,14 @@ header.top { background: var(--wit); border-bottom: 1px solid var(--lijn); }
 .brand .naam { display: block; font: 800 1.02rem/1.1 var(--kop); color: var(--inkt); letter-spacing: -.01em; }
 .brand .sub { display: block; font: 600 .78rem/1.2 var(--tekst); color: var(--leisteen); }
 .hoofdnav { display: flex; align-items: center; gap: 1.1rem; }
-.hoofdnav a { font: 700 .92rem var(--kop); color: var(--inkt); text-decoration: none; padding: .3rem 0; border-bottom: 2px solid transparent; }
+.hoofdnav a { font: 700 .92rem var(--kop); color: var(--inkt); text-decoration: none; padding: .3rem 0; border-bottom: 2px solid transparent; white-space: nowrap; }
 .hoofdnav a:hover { color: var(--rood); }
 .hoofdnav a[aria-current="page"] { border-bottom-color: var(--rood); }
 .hoofdnav a.terug { font: 600 .85rem var(--tekst); color: var(--leisteen); }
 .taal { display: flex; border: 1px solid var(--lijn); border-radius: 999px; padding: 2px; }
 .taal a { font: 700 .72rem/1 var(--kop); color: var(--leisteen); text-decoration: none; letter-spacing: .04em; padding: .4rem .55rem; border-radius: 999px; }
 .taal a.actief { background: var(--inkt); color: #fff; }
-@media (max-width: 720px) {
+@media (max-width: 1000px) {
   .top-row { flex-wrap: wrap; }
   .hoofdnav { width: 100%; order: 3; gap: .9rem; overflow-x: auto; }
   .hoofdnav a.terug { display: none; }
