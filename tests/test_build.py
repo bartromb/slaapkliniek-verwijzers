@@ -422,3 +422,14 @@ def test_terug_link_gaat_rechtstreeks_naar_slaapkliniek(dist):
     assert 'class="terug" href="https://slaapkliniek.be/"' in html
     assert "slaapkliniek.be/start" not in html
 
+
+def test_drukwerk_qr_bestaat_voor_elk_drukwerkdomein():
+    site = _site()
+    for taal in ("nl", "fr"):
+        naam = "qr_" + site["domeinen"][taal].split("//")[1].replace(".", "_")
+        for ext in ("svg", "pdf", "eps", "png"):
+            f = ROOT / "drukwerk" / f"{naam}.{ext}"
+            assert f.exists() and f.stat().st_size > 500, f
+        svg = (ROOT / "drukwerk" / f"{naam}.svg").read_text(encoding="utf-8")
+        assert 'width="330"' in svg and 'height="330"' in svg, "versie 2 (25 modules) + stille zone 4 → 33 modules × 10"
+

@@ -47,6 +47,12 @@ patiëntnaam en rijksregisternummer), `kopie_prioriteit` (1 = valt nooit weg), `
 regel), `kopie.max_tekens` in `site.json`. eHealthBox: `ehealthbox` in `site.json`; het blok verschijnt
 pas als `actief` op `true` staat en type en nummer ingevuld zijn.
 
+## Drukwerk
+
+QR-codes voor pennen en zakkaart staan in [`drukwerk/`](drukwerk/) (SVG, PDF, EPS, PNG), met richtlijnen
+voor de drukker. Ze verwijzen naar `slaapstudie.be` en `etudedusommeil.be`; `tools/maak_qr.py` maakt ze
+opnieuw uit `config/site.json`.
+
 ## Structuur
 
 - `config/site.json` — campussen, contact, Consult-URL's en -dienstnaam, drempels keuzehulp,
