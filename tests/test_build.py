@@ -402,6 +402,9 @@ def test_domeinen_nginx_en_canonical(dist):
     assert "if ($start_taal) { return 302 /$start_taal/; }" in conf
     assert "server_name verwijzers.slaapkliniek.be slaapstudie.be etudedusommeil.be _;" in conf
     assert "return 301 https://slaapstudie.be$request_uri;" in conf and "return 301 https://etudedusommeil.be$request_uri;" in conf
+    assert "return 301 https://slaapstudie.be/nl$request_uri;" in conf and "return 301 https://etudedusommeil.be/fr$request_uri;" in conf
+    assert "absolute_redirect off;" in conf, "achter de proxy moet de Location relatief zijn (anders http://)"
+    assert 'location ~ "^/(aanvraag|consult)(/|$)"' in conf
     for d in ("slaapstudie.eu", "slaapstudie.com", "www.slaapstudie.be", "etudedusommeil.eu", "etudedusommeil.com", "www.etudedusommeil.be"):
         assert d in conf, d
     # de domeinen in nginx zijn die uit site.json
