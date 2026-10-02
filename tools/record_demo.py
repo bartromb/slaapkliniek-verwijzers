@@ -19,10 +19,12 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 W, H = 1366, 768
+BASIS = {"nl": "https://slaapstudie.be", "fr": "https://etudedusommeil.be",
+         "en": "https://verwijzers.slaapkliniek.be", "de": "https://verwijzers.slaapkliniek.be"}
 
 CAPTIONS = {
     "nl": {
-        "intro": "Slaaponderzoek aanvragen via verwijzers.slaapkliniek.be — zo werkt het",
+        "intro": "Slaaponderzoek aanvragen via slaapstudie.be — zo werkt het",
         "info": "Stap 1 — Polygrafie of polysomnografie? De info-pagina helpt kiezen.",
         "form": "Stap 2 — Vul de verwijsbrief in. Alles blijft in uw browser.",
         "verwijzer": "Uw gegevens als verwijzer, met RIZIV-nummer.",
@@ -62,7 +64,7 @@ CAPTIONS = {
         "einde": "Done: referral letter attached, appointment in the Sleep Clinic's schedule.",
     },
     "fr": {
-        "intro": "Demander un examen du sommeil via verwijzers.slaapkliniek.be — comment ça marche",
+        "intro": "Demander un examen du sommeil via etudedusommeil.be — comment ça marche",
         "info": "Étape 1 — Polygraphie ou polysomnographie ? La page d'info aide à choisir.",
         "form": "Étape 2 — Remplissez la lettre de renvoi. Tout reste dans votre navigateur.",
         "verwijzer": "Vos coordonnées de prescripteur, avec le numéro INAMI.",
@@ -197,7 +199,7 @@ def run(args):
         ctx.grant_permissions(["clipboard-read", "clipboard-write"])
         page = ctx.new_page()
         d = Demo(page, lang)
-        base = args.base_url.rstrip("/")
+        base = (args.base_url or BASIS[lang]).rstrip("/")
 
         # 1. info
         page.goto(f"{base}/{lang}/", wait_until="networkidle")
@@ -296,7 +298,7 @@ def run(args):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--base-url", default="https://verwijzers.slaapkliniek.be")
+    ap.add_argument("--base-url", default=None, help="standaard het domein van de taal (BASIS)")
     ap.add_argument("--lang", default="nl", choices=sorted(CAPTIONS))
     ap.add_argument("--chrome", default=None, help="pad naar chrome/chromium (anders Playwrights eigen)")
     ap.add_argument("--out", default="videos")
