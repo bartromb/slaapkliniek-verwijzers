@@ -404,6 +404,7 @@ def test_domeinen_nginx_en_canonical(dist):
     assert "return 301 https://slaapstudie.be$request_uri;" in conf and "return 301 https://etudedusommeil.be$request_uri;" in conf
     assert "return 301 https://slaapstudie.be/nl$request_uri;" in conf and "return 301 https://etudedusommeil.be/fr$request_uri;" in conf
     assert "absolute_redirect off;" in conf, "achter de proxy moet de Location relatief zijn (anders http://)"
+    assert 'if ($http_x_forwarded_proto = "http") { return 301 https://$host$request_uri; }' in conf
     assert 'location ~ "^/(aanvraag|consult)(/|$)"' in conf
     for d in ("slaapstudie.eu", "slaapstudie.com", "www.slaapstudie.be", "etudedusommeil.eu", "etudedusommeil.com", "www.etudedusommeil.be"):
         assert d in conf, d
