@@ -33,7 +33,7 @@
   <p>{{ t('consult.terugval_tekst') }}</p>
   <ul class="contact">
     {% if contact.secretariaat_tel %}<li>{{ t('consult.terugval_tel') }}: <a href="tel:{{ contact.secretariaat_tel | replace(' ', '') }}">{{ contact.secretariaat_tel }}</a></li>{% endif %}
-    {% if contact.ehealthbox %}<li>{{ t('consult.terugval_ehealthbox') }}: {{ contact.ehealthbox }}</li>{% endif %}
+    {% if ehealthbox_zichtbaar %}<li>{{ t('ehealthbox.titel') }}: {{ ehealthbox.type }} {{ ehealthbox.nummer }}{% if ehealthbox.kwaliteit %} ({{ ehealthbox.kwaliteit }}){% endif %} — <a href="{{ base_path }}{{ lang }}/aanvraag/#bezorgen">{{ t('bezorgen.titel') }}</a></li>{% endif %}
   </ul>
   <p class="noot">{{ t('consult.geen_patientdata') }}</p>
 </section>

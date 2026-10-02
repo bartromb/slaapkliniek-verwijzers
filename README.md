@@ -1,6 +1,6 @@
 # slaapkliniek-verwijzers
 
-Verwijsportaal **verwijzers.slaapkliniek.be**: een volledig statische website die huisartsen en
+Verwijsportaal **slaapstudie.be** (NL), **etudedusommeil.be** (FR) en **verwijzers.slaapkliniek.be**: een volledig statische website die huisartsen en
 andere artsen begeleidt naar een aanvraag voor polygrafie (PG) of polysomnografie (PSG) in de
 Slaapkliniek. De arts vult een gestructureerde verwijsbrief in, maakt er **in de browser** een PDF
 van (jsPDF, vendored) en boekt de afspraak zelf in **Nexuzhealth Consult**. De site is een
@@ -25,6 +25,28 @@ live site); opnieuw opnemen:
 for l in nl fr en de; do .venv/bin/python tools/record_demo.py --lang $l --chrome <pad naar chrome> --out videos/; done
 ```
 
+## Formulier aanpassen (`config/velden.json`)
+
+Het formulier, de PDF en de kopieertekst komen uit één velddefinitie. Een veld toevoegen:
+
+```json
+{ "id": "nieuw_veld", "type": "ja_nee", "label_key": "veld.nieuw_veld", "verplicht": false,
+  "conventie": true, "kopie_label": "kopie.nieuw_veld", "kopie_prioriteit": 2,
+  "kopie_regel": "klachten", "sectie": "klinisch", "weergave": "radio",
+  "opties": [{"waarde": "ja", "label_key": "veld.ja"}, {"waarde": "nee", "label_key": "veld.nee"}] }
+```
+
+plus de labels in `i18n/*.json`. `python3 build.py --check` meldt elke fout (onbekend type, ontbrekende
+sleutel, onbekende sectie of kopie-regel). Types: `tekst`, `getal`, `datum`, `keuze`, `meerkeuze`,
+`ja_nee`, `berekend`, `vrije_tekst`. Verhoog `versie` bij elke inhoudelijke wijziging; ze staat in de
+PDF-voettekst en in de kopieertekst. Zodra de conventietekst definitief is: `conventie`-vlaggen
+nalopen en `conventie_definitief: true` in `config/site.json`.
+
+Kopieertekst: `kopie_label` (i18n-sleutel van de afkorting; `null` = nooit in de kopie, zoals
+patiëntnaam en rijksregisternummer), `kopie_prioriteit` (1 = valt nooit weg), `kopie_regel` (op welke
+regel), `kopie.max_tekens` in `site.json`. eHealthBox: `ehealthbox` in `site.json`; het blok verschijnt
+pas als `actief` op `true` staat en type en nummer ingevuld zijn.
+
 ## Structuur
 
 - `config/site.json` — campussen, contact, Consult-URL's en -dienstnaam, drempels keuzehulp,
@@ -33,12 +55,15 @@ for l in nl fr en de; do .venv/bin/python tools/record_demo.py --lang $l --chrom
 - `i18n/{nl,fr,en,de}.json` — platte sleutels; `nl.json` is de referentie, de andere talen
   moeten exact dezelfde sleutels dragen (test).
 - `templates/` — Jinja2 (`base`, `index`, `aanvraag`, `consult`, `root`), alleen bij de build.
+- `config/velden.json` — velddefinitie van het formulier (zie hierboven).
 - `static/js/scores.js` — zuivere rekenfuncties (BMI, leeftijd, ESS, STOP-BANG, keuzehulp,
-  RIZIV); `form.js` — formulier; `pdf.js` — verwijsbrief-PDF; `lang.js` — taalkeuze op `/`.
+  RIZIV); `kopieer.js` — kopieertekst (pure functies + klembord); `form.js` — formulier op basis
+  van `velden.json`; `pdf.js` — verwijsbrief-PDF; `lang.js` — taalkeuze op `/`.
 - `vendor/jspdf.umd.min.js` — jsPDF 2.5.2 (MIT, `vendor/jspdf.LICENSE`).
 - `build.py` — rendert templates × talen naar `dist/` (niet gecommit).
-- `tests/test_build.py` — randvoorwaarden op `dist/`; `tests/test_scores.js` — rekenfuncties
-  (browser via `tests/test_scores.html`, Node, of V8 vanuit pytest).
+- `tests/test_build.py` — randvoorwaarden op `dist/`; `tests/test_scores.js` en
+  `tests/test_kopieer.js` — rekenfuncties en kopieertekst (browser via `tests/test_*.html`, Node,
+  of V8 vanuit pytest).
 - `nginx/` — CSP en overige headers; `Dockerfile` — build-stage (Python) + `nginx:alpine`.
 
 ## Lokaal draaien

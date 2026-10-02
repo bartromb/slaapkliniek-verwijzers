@@ -129,3 +129,28 @@ footer.voet a { color: var(--inkt); }
 footer .privacy { font-weight: 600; color: var(--inkt); margin: 0 0 .25rem; }
 footer .meta { margin: 0; }
 @media print { header.top, footer.voet, .knoppen, .taal { display: none; } }
+
+/* ── v0.2: conventielabel, teller, kopieertekst, bezorgroutes ── */
+.conventie { display: inline-block; font: 600 .68rem/1.5 var(--tekst); color: var(--leisteen); border: 1px solid var(--lijn); border-radius: 999px; padding: 0 .45rem; margin-left: .35rem; vertical-align: .08rem; cursor: help; }
+.radios.inline { display: flex; flex-wrap: wrap; gap: .1rem 1.2rem; }
+.radios.inline label { margin: .15rem 0; }
+label.vink { font-weight: 400 !important; }
+.teller { font: 600 .9rem var(--tekst); color: var(--leisteen); margin: 1rem 0 .2rem; }
+.knop.stil { border-color: var(--lijn); color: var(--leisteen); }
+.knop.stil:hover { background: var(--mist); color: var(--inkt); border-color: var(--leisteen); }
+.kopie { margin: 1rem 0 0; }
+.kopie label { display: block; font-weight: 600; font-size: .95rem; margin-bottom: .25rem; }
+.kopie textarea { font: .86rem/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background: var(--mist); white-space: pre-wrap; }
+#kopie_melding { color: var(--ok); font-weight: 600; margin-left: .5rem; }
+.bezorgen { border-top: 1px solid var(--lijn); margin-top: 1.9rem; padding-top: 1.9rem; }
+.routes { display: grid; gap: 1rem; grid-template-columns: 1fr; }
+@media (min-width: 760px) { .routes { grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); } }
+.routes .kaart { border-top: 3px solid var(--rood); border-radius: .4rem; }
+.routes .kaart p { font-size: .95rem; }
+ol.compact { margin: .3rem 0 .6rem; padding-left: 1.2rem; font-size: .95rem; }
+dl.identificatie { margin: .4rem 0 .7rem; }
+dl.identificatie div { display: grid; grid-template-columns: 6rem 1fr; gap: .5rem; padding: .25rem 0; border-top: 1px solid var(--lijn); font-size: .92rem; }
+dl.identificatie dt { color: var(--leisteen); }
+dl.identificatie dd { margin: 0; font-weight: 600; }
+button.mini { font: 600 .75rem var(--tekst); color: var(--rood); background: #fff; border: 1px solid var(--lijn); border-radius: 999px; padding: .1rem .55rem; margin-left: .4rem; cursor: pointer; }
+button.mini:hover { border-color: var(--rood); }

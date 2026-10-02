@@ -17,6 +17,7 @@ jobs:
       - run: python build.py
       - run: pytest -q
       - run: node tests/test_scores.js
+      - run: node tests/test_kopieer.js
       - name: docker-image bouwt
         run: docker build -t slaapkliniek-verwijzers:ci .
       - name: nginx-config is geldig in het image

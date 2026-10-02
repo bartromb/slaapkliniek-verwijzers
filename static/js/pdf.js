@@ -1,4 +1,6 @@
-/* pdf.js — de verwijsbrief als PDF, volledig in de browser (jsPDF, vendor/). Geen netwerk. */
+/* pdf.js — de verwijsbrief als PDF, volledig in de browser (jsPDF, vendor/). Geen netwerk.
+   Het model komt uit form.js en volgt de secties van config/velden.json:
+   { kop, secties: [{titel, regels: [{label, waarde}]}], vrij: [{titel, tekst}], verwijzerNaam, versie, url } */
 (function (root) {
   'use strict';
 
@@ -6,7 +8,8 @@
   function ascii(s) {
     return String(s === null || s === undefined ? '' : s)
       .replace(/≥/g, '>=').replace(/≤/g, '<=').replace(/→/g, '->').replace(/·/g, '-')
-      .replace(/–/g, '-').replace(/—/g, '-').replace(/[‘’]/g, "'").replace(/[“”„]/g, '"');
+      .replace(/–/g, '-').replace(/—/g, '-').replace(/[‘’]/g, "'").replace(/[“”„]/g, '"')
+      .replace(/…/g, '...');
   }
 
   function datumStempel(d) {
@@ -21,111 +24,84 @@
     return String(prefix || 'verwijsbrief').replace(/[^A-Za-z0-9_-]/g, '_') + '_' + datumStempel(d).compact + '.pdf';
   }
 
-  /**
-   * data: het object uit form.js (verzamel()); t: vertaalfunctie; opties: { jsPDF, vandaag }.
-   * Geeft de bestandsnaam terug. Gooit als jsPDF ontbreekt.
-   */
-  function maak(data, t, opties) {
+  /** model: zie kop van dit bestand; t: vertaalfunctie; opties: { jsPDF, vandaag, nietOpslaan }. Geeft de bestandsnaam. */
+  function maak(model, t, opties) {
     opties = opties || {};
     var JsPdf = opties.jsPDF || (root.jspdf && root.jspdf.jsPDF);
     if (!JsPdf) throw new Error('jsPDF ontbreekt');
     var doc = new JsPdf({ unit: 'mm', format: 'a4' });
-    var marge = 18, breedte = 210 - 2 * marge, y = marge, regelH = 5.2;
+    var marge = 17, breedte = 210 - 2 * marge, y = marge, regelH = 4.6;
 
     function nieuwePaginaAlsNodig(h) {
       if (y + h > 297 - marge - 12) { doc.addPage(); y = marge; }
     }
     function kop(txt) {
       nieuwePaginaAlsNodig(12);
-      y += 3;
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(11.5); doc.setTextColor(26, 58, 143);
-      doc.text(ascii(txt), marge, y); y += 2;
-      doc.setDrawColor(26, 58, 143); doc.line(marge, y, marge + breedte, y); y += 4.5;
+      y += 1.8;
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(10.5); doc.setTextColor(226, 0, 21);
+      doc.text(ascii(txt), marge, y); y += 1.8;
+      doc.setDrawColor(226, 0, 21); doc.line(marge, y, marge + breedte, y); y += 4.0;
       doc.setTextColor(0, 0, 0);
     }
     function regel(label, waarde) {
       var w = ascii(waarde);
-      if (w === '') w = ascii(t('js.pdf_geen'));
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5);
-      // Een lang label (bv. "Lengte / gewicht / BMI / halsomtrek") liep de waardekolom in:
-      // het label wordt binnen zijn eigen kolom afgebroken, de waarde start op dezelfde regel.
-      var labelLijnen = doc.splitTextToSize(ascii(label) + ':', 46);
+      if (w === '') w = '-';
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(9.2);
+      // Een lang label breekt binnen zijn eigen kolom af; de waarde start op dezelfde regel.
+      var labelLijnen = doc.splitTextToSize(ascii(label) + ':', 58);
       doc.setFont('helvetica', 'normal');
-      var lijnen = doc.splitTextToSize(w, breedte - 52);
+      var lijnen = doc.splitTextToSize(w, breedte - 64);
       var n = Math.max(lijnen.length, labelLijnen.length);
       nieuwePaginaAlsNodig(regelH * n);
       doc.setFont('helvetica', 'bold');
       doc.text(labelLijnen, marge, y);
       doc.setFont('helvetica', 'normal');
-      doc.text(lijnen, marge + 50, y);
+      doc.text(lijnen, marge + 62, y);
       y += regelH * n;
     }
     function alinea(txt) {
-      doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(9.2);
       var lijnen = doc.splitTextToSize(ascii(txt), breedte);
       nieuwePaginaAlsNodig(regelH * lijnen.length);
       doc.text(lijnen, marge, y); y += regelH * lijnen.length;
     }
 
     var stempel = datumStempel(opties.vandaag);
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.setTextColor(26, 58, 143);
-    doc.text(ascii(t('js.pdf_kop')), marge, y); y += 7;
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(0, 0, 0);
-    doc.text(ascii(t('js.pdf_datum')) + ': ' + stempel.iso, marge, y); y += 4;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.setTextColor(31, 31, 31);
+    doc.text(ascii(model.kop), marge, y); y += 6.5;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9.2); doc.setTextColor(0, 0, 0);
+    doc.text(ascii(t('js.pdf_datum')) + ': ' + stempel.iso, marge, y); y += 3.5;
 
-    kop(t('js.pdf_verwijzer'));
-    regel(t('js.pdf_verwijzer'), data.verwijzer.naam);
-    regel(t('js.pdf_riziv'), data.verwijzer.riziv);
-    regel(t('js.pdf_adres'), data.verwijzer.adres);
-    regel(t('js.pdf_tel'), data.verwijzer.tel);
+    (model.secties || []).forEach(function (s) {
+      if (!s.regels || !s.regels.length) return;
+      kop(s.titel);
+      s.regels.forEach(function (r) { regel(r.label, r.waarde); });
+    });
+    (model.vrij || []).forEach(function (b) {
+      if (!b.tekst) return;
+      kop(b.titel);
+      String(b.tekst).split('\n').forEach(alinea);
+    });
 
-    kop(t('js.pdf_patient'));
-    regel(t('js.pdf_patient'), data.patient.naam);
-    regel(t('js.pdf_geboortedatum'), data.patient.geboortedatum);
-    regel(t('js.pdf_geslacht'), data.patient.geslachtLabel);
-    regel(t('js.pdf_rrn'), data.patient.rrn);
-
-    kop(t('js.pdf_onderzoek'));
-    regel(t('js.pdf_onderzoek'), data.onderzoek.label);
-    regel(t('js.pdf_campus'), data.onderzoek.campusLabel);
-    regel(t('js.pdf_urgentie'), data.urgentie.label + (data.urgentie.toelichting ? ' - ' + data.urgentie.toelichting : ''));
-
-    kop(t('aanvraag.sectie_klinisch'));
-    regel(t('js.pdf_klachten'), data.klachten.join(', '));
-    regel(t('js.pdf_antropometrie'),
-      (data.lengte || '-') + ' cm / ' + (data.gewicht || '-') + ' kg / BMI ' + (data.bmi === null ? '-' : data.bmi) + ' / ' + (data.hals || '-') + ' cm');
-    var essTxt = data.ess.totaal === null ? t('js.pdf_geen') : (data.ess.totaal + '/24' + (data.ess.interpretatie ? ' (' + data.ess.interpretatie + ')' : ''));
-    regel(t('js.pdf_ess'), essTxt);
-    if (data.ess.totaal !== null) regel(t('js.pdf_ess_items'), data.ess.items.map(function (v, i) { return (i + 1) + ':' + v; }).join('  '));
-    regel(t('js.pdf_stopbang'), data.stopbang.totaal + '/8  (' + data.stopbang.itemsTekst + ')');
-    regel(t('js.pdf_comorbiditeit'), data.comorbiditeit.join(', '));
-    regel(t('js.pdf_medicatie'), data.medicatie);
-    regel(t('js.pdf_eerder'), (data.eerder.ja ? t('js.pdf_ja') : t('js.pdf_nee')) + (data.eerder.toelichting ? ' - ' + data.eerder.toelichting : ''));
-
-    kop(t('js.pdf_vraagstelling'));
-    alinea(data.vraagstelling);
-
-    kop(t('js.pdf_keuzehulp'));
-    alinea(data.keuzehulpTekst);
-    alinea(t('aanvraag.keuzehulp_arts'));
-
-    nieuwePaginaAlsNodig(30);
-    y += 8;
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5);
+    nieuwePaginaAlsNodig(22);
+    y += 6;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(9.2);
     doc.text(ascii(t('js.pdf_handtekening')) + ':', marge, y);
     doc.setFont('helvetica', 'normal');
-    doc.text(ascii(data.verwijzer.naam) + ' - ' + stempel.iso, marge + 50, y); y += 14;
-    doc.line(marge + 50, y, marge + 130, y);
+    doc.text(ascii(model.verwijzerNaam || '') + ' - ' + stempel.iso, marge + 62, y); y += 11;
+    doc.setDrawColor(120, 120, 120); doc.line(marge + 62, y, marge + 142, y);
 
     var paginas = doc.getNumberOfPages();
+    var voet = ascii(t('js.pdf_voettekst')) + '  |  ' + ascii(t('js.pdf_formulierversie')) + ' ' + ascii(model.versie || '') + (model.url ? '  |  ' + ascii(model.url) : '');
     for (var p = 1; p <= paginas; p++) {
       doc.setPage(p);
-      doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(90, 90, 90);
-      doc.text(ascii(t('js.pdf_voettekst')) + '   ' + p + '/' + paginas, marge, 297 - 10);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(7.2); doc.setTextColor(90, 90, 90);
+      doc.text(doc.splitTextToSize(voet + '   ' + p + '/' + paginas, breedte), marge, 297 - 11);
     }
 
     var naam = bestandsnaam(t('js.pdf_bestandsnaam'), opties.vandaag);
     if (!opties.nietOpslaan) doc.save(naam);
+    if (opties.geefUitvoer) return { naam: naam, uitvoer: doc.output() };   // alleen voor tests
     return naam;
   }
 

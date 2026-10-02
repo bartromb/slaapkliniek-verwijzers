@@ -60,14 +60,14 @@ ssh root@dedodedodo.be "cd /data/verwijzers && git checkout <vorige tag of commi
 
 De proxyhost in NPM verwijderen (of uitschakelen) haalt de site offline zonder de container aan te raken.
 
-## 4. Aliasdomeinen (slaapstudie.* en etudedusommeil.*)
+## 4. Domeinen (slaapstudie.* en etudedusommeil.*)
 
-De zes domeinen zijn **doorverwijzers** (301) naar het canonieke portaal, met de taal van het
-domein: `slaapstudie.{be,eu,com}` → `https://verwijzers.slaapkliniek.be/nl/`,
-`etudedusommeil.{be,eu,com}` → `/fr/` (pad blijft bewaard; een pad dat al `/nl/`, `/fr/`,
-`/en/` of `/de/` draagt blijft zoals het is). De doorverwijzing zit in `nginx/default.conf`
-(tweede server-blok, gekozen op de Host-header die NPM doorgeeft) en wordt in CI met `nginx -t`
-en `tests/test_build.py` bewaakt.
+Sinds v0.2.0 **serveren** de twee drukwerkdomeinen de site zelf: `slaapstudie.be/` → `/nl/`,
+`etudedusommeil.be/` → `/fr/` (canonical per taal uit `domeinen` in `config/site.json`). De
+varianten met `www`, `.eu` en `.com` verwijzen met 301 naar het `.be`-domein van hun taal, met
+behoud van het pad. `verwijzers.slaapkliniek.be` blijft werken. Alles zit in `nginx/default.conf`
+(gekozen op de Host-header die NPM doorgeeft) en wordt in CI met `nginx -t` en
+`tests/test_build.py` bewaakt.
 
 **Gandi (LiveDNS), per domein — zes keer hetzelfde:**
 
@@ -76,18 +76,13 @@ en `tests/test_build.py` bewaakt.
 | A | `@` | `65.108.230.243` | 1800 |
 | A | `www` | `65.108.230.243` | 1800 |
 
-Verwijder eventuele parkeerrecords van Gandi (`@` en `www` naar 217.70.184.38, en `webmail`/`*`
-als die er staan). Laat de MX-records ongemoeid als je ooit mail op die domeinen wilt.
+Verwijder Gandi's parkeerrecords (`www` CNAME naar `webredir.vip.gandi.net`, `@` naar
+217.70.184.38). MX-, SPF- en DKIM-records mogen blijven.
 
-**Nginx Proxy Manager — één proxyhost met twaalf namen:**
+**Nginx Proxy Manager — één proxyhost met twaalf namen** (bestaat sinds 30-09-2026):
+`slaapstudie.{be,eu,com}`, `etudedusommeil.{be,eu,com}` en hun `www`-varianten → `http` →
+`verwijzers` : `80`, één Let's Encrypt-certificaat voor alle namen, Force SSL, HTTP/2, HSTS.
 
-| veld | waarde |
-|---|---|
-| Domain Names | `slaapstudie.be`, `www.slaapstudie.be`, `slaapstudie.eu`, `www.slaapstudie.eu`, `slaapstudie.com`, `www.slaapstudie.com`, `etudedusommeil.be`, `www.etudedusommeil.be`, `etudedusommeil.eu`, `www.etudedusommeil.eu`, `etudedusommeil.com`, `www.etudedusommeil.com` |
-| Scheme / Forward | `http` → `verwijzers` : `80` |
-| SSL | Request a new SSL Certificate (Let's Encrypt, één certificaat voor alle twaalf namen), Force SSL, HTTP/2, HSTS |
-
-Voeg de namen pas toe als ze bij Gandi naar de server wijzen (Let's Encrypt controleert elke
-naam via HTTP). Controle: `curl -sI https://slaapstudie.be/ | grep -i location` →
-`https://verwijzers.slaapkliniek.be/nl/`, en `curl -sI https://etudedusommeil.be/aanvraag/` →
-`.../fr/aanvraag/`.
+Controle: `curl -sI https://slaapstudie.be/ | grep -i location` → `/nl/`;
+`curl -sI https://www.slaapstudie.eu/aanvraag/ | grep -i location` →
+`https://slaapstudie.be/aanvraag/`; `curl -s https://etudedusommeil.be/fr/ | grep canonical`.

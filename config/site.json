@@ -1,7 +1,7 @@
 {
   "base_path": "/",
   "site_url": "https://verwijzers.slaapkliniek.be",
-  "terug_url": "https://slaapkliniek.be/start",
+  "terug_url": "https://slaapkliniek.be/",
   "consult": {
     "login_url": "https://mynexuzpro.nexuzhealth.be/?language={lang}",
     "account_url": "https://forms.nexuzhealth.be/questionnaires/aanvraag-aansluiting-mynexuzhealthpro?lang={lang}&target=clinicus",
@@ -52,7 +52,6 @@
   ],
   "contact": {
     "secretariaat_tel": "<...>",
-    "ehealthbox": "<...>",
     "email_algemeen": "<niet voor patiëntdata>"
   },
   "keuzehulp": {
@@ -73,8 +72,32 @@
     "www.slaapkliniek.be",
     "github.com",
     "mynexuzpro.nexuzhealth.be",
-    "forms.nexuzhealth.be"
+    "forms.nexuzhealth.be",
+    "slaapstudie.be",
+    "etudedusommeil.be"
   ],
   "_comment_consult": "login_url = het pro-portaal zelf (gaat rechtstreeks de Shibboleth/itsme-login in, geen tussenpagina); {lang} wordt per taal ingevuld door build.py",
-  "_comment_campussen": "pg/psg: true toont het label op de infopagina, null verbergt het tot bekend is welke campus wat doet (open vraag §15.4); adres en wachttijd_weken idem."
+  "_comment_campussen": "pg/psg: true toont het label op de infopagina, null verbergt het tot bekend is welke campus wat doet (open vraag §15.4); adres en wachttijd_weken idem.",
+  "kliniek": "Slaapkliniek AZORG",
+  "domeinen": {
+    "nl": "https://slaapstudie.be",
+    "fr": "https://etudedusommeil.be",
+    "standaard": "https://verwijzers.slaapkliniek.be"
+  },
+  "_comment_domeinen": "Canonieke URL per taal (drukwerk: slaapstudie.be → /nl/, etudedusommeil.be → /fr/); talen zonder eigen domein gebruiken 'standaard'. Alle domeinen wijzen naar dezelfde container (nginx/default.conf).",
+  "kopie": {
+    "max_tekens": 1000,
+    "max_vrije_tekst": 160
+  },
+  "_comment_kopie": "max_tekens: limiet van het Consult-veld 'indicatie / reden van verwijzing' (nog onbekend, 1000 is voorzichtig). max_vrije_tekst: tot hoeveel tekens Medicatie en Vraag worden ingekort als de tekst te lang is.",
+  "conventie_definitief": false,
+  "ehealthbox": {
+    "actief": false,
+    "type": "<KBO | RIZIV | EHP>",
+    "nummer": "<...>",
+    "kwaliteit": "<bv. HOSPITAL>",
+    "dienst": "Slaapkliniek",
+    "toelichting_key": "ehealthbox.toelichting"
+  },
+  "_comment_ehealthbox": "actief pas op true als AZORG-IT de box of routering bevestigd heeft én vaststaat wie hem dagelijks leest. Zolang actief false is of het nummer een placeholder, is het blok onzichtbaar."
 }

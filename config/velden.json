@@ -1,0 +1,1255 @@
+{
+  "versie": "2026-10-a",
+  "_toelichting": "Velddefinitie van het verwijsformulier. build.py rendert het formulier hieruit; form.js, pdf.js en kopieer.js lezen dezelfde definitie. type: tekst | getal | datum | keuze | meerkeuze | ja_nee | berekend | vrije_tekst. conventie: vermoedelijk vereist in de nieuwe slaapapneuconventie (label + teller, nooit blokkerend). kopie_label: i18n-sleutel van de afkorting in de kopieertekst (null = niet in de kopie; \"\" = alleen de waarde). kopie_prioriteit: 1 = altijd mee, hoger = eerst geschrapt. kopie_regel: regel waarop het gegeven komt (zie kopie_regels). Extra sleutels: opties, weergave (radio|select|vink|schaal), hint_key, attrs, validatie, formule, groep, letter, afgeleid, toon_als, kopie_formaat, kopie_met, keuzehulp, exclusief.",
+  "secties": [
+    {
+      "id": "verwijzer",
+      "label_key": "aanvraag.sectie_verwijzer"
+    },
+    {
+      "id": "patient",
+      "label_key": "aanvraag.sectie_patient"
+    },
+    {
+      "id": "onderzoek",
+      "label_key": "aanvraag.sectie_onderzoek"
+    },
+    {
+      "id": "klinisch",
+      "label_key": "aanvraag.sectie_klinisch"
+    },
+    {
+      "id": "ess",
+      "label_key": "aanvraag.ess_titel",
+      "intro_key": "aanvraag.ess_intro",
+      "weergave": "schaal"
+    },
+    {
+      "id": "stopbang",
+      "label_key": "aanvraag.stopbang_titel",
+      "intro_key": "aanvraag.stopbang_intro"
+    },
+    {
+      "id": "comorbiditeit",
+      "label_key": "aanvraag.comorbiditeit"
+    },
+    {
+      "id": "voorgeschiedenis",
+      "label_key": "sectie.voorgeschiedenis"
+    },
+    {
+      "id": "leefstijl",
+      "label_key": "sectie.leefstijl"
+    },
+    {
+      "id": "vraag",
+      "label_key": "aanvraag.vraagstelling"
+    }
+  ],
+  "kopie_regels": [
+    {
+      "id": "onderzoek",
+      "scheiding": " | "
+    },
+    {
+      "id": "patient",
+      "prefix_key": "kopie.pt",
+      "scheiding": ", "
+    },
+    {
+      "id": "scores",
+      "scheiding": " | "
+    },
+    {
+      "id": "klachten",
+      "scheiding": ", "
+    },
+    {
+      "id": "cv",
+      "scheiding": " | "
+    },
+    {
+      "id": "eerder",
+      "scheiding": " | "
+    },
+    {
+      "id": "leefstijl",
+      "scheiding": " | "
+    },
+    {
+      "id": "medicatie",
+      "scheiding": " | "
+    },
+    {
+      "id": "vraag",
+      "scheiding": " | "
+    },
+    {
+      "id": "verwijzer",
+      "scheiding": ", "
+    }
+  ],
+  "velden": [
+    {
+      "id": "verwijzer_naam",
+      "type": "tekst",
+      "label_key": "aanvraag.verwijzer_naam",
+      "verplicht": true,
+      "conventie": false,
+      "kopie_label": "kopie.verwijzer",
+      "kopie_prioriteit": 1,
+      "kopie_regel": "verwijzer",
+      "sectie": "verwijzer"
+    },
+    {
+      "id": "verwijzer_riziv",
+      "type": "tekst",
+      "label_key": "aanvraag.verwijzer_riziv",
+      "verplicht": true,
+      "conventie": false,
+      "kopie_label": "kopie.riziv",
+      "kopie_prioriteit": 1,
+      "kopie_regel": "verwijzer",
+      "sectie": "verwijzer",
+      "hint_key": "aanvraag.verwijzer_riziv_hint",
+      "validatie": "riziv",
+      "kopie_formaat": "spatie",
+      "attrs": {
+        "inputmode": "numeric",
+        "placeholder": "1-23456-78-901"
+      }
+    },
+    {
+      "id": "verwijzer_adres",
+      "type": "tekst",
+      "label_key": "aanvraag.verwijzer_adres",
+      "verplicht": false,
+      "conventie": false,
+      "kopie_label": null,
+      "kopie_prioriteit": null,
+      "kopie_regel": null,
+      "sectie": "verwijzer"
+    },
+    {
+      "id": "verwijzer_tel",
+      "type": "tekst",
+      "label_key": "aanvraag.verwijzer_tel",
+      "verplicht": false,
+      "conventie": false,
+      "kopie_label": null,
+      "kopie_prioriteit": null,
+      "kopie_regel": null,
+      "sectie": "verwijzer",
+      "attrs": {
+        "inputmode": "tel"
+      }
+    },
+    {
+      "id": "patient_naam",
+      "type": "tekst",
+      "label_key": "aanvraag.patient_naam",
+      "verplicht": true,
+      "conventie": false,
+      "kopie_label": null,
+      "kopie_prioriteit": null,
+      "kopie_regel": null,
+      "sectie": "patient"
+    },
+    {
+      "id": "patient_geboortedatum",
+      "type": "datum",
+      "label_key": "aanvraag.patient_geboortedatum",
+      "verplicht": true,
+      "conventie": false,
+      "kopie_label": "",
+      "kopie_prioriteit": 1,
+      "kopie_regel": "patient",
+      "sectie": "patient",
+      "validatie": "geboortedatum",
+      "kopie_formaat": "geboortedatum"
+    },
+    {
+      "id": "patient_geslacht",
+      "type": "keuze",
+      "label_key": "aanvraag.patient_geslacht",
+      "verplicht": false,
+      "conventie": false,
+      "kopie_label": "",
+      "kopie_prioriteit": 1,
+      "kopie_regel": "patient",
+      "sectie": "patient",
+      "weergave": "radio",
+      "opties": [
+        {
+          "waarde": "m",
+          "label_key": "aanvraag.geslacht_m",
+          "kopie_key": "kopie.opt.m"
+        },
+        {
+          "waarde": "v",
+          "label_key": "aanvraag.geslacht_v",
+          "kopie_key": "kopie.opt.v"
+        },
+        {
+          "waarde": "x",
+          "label_key": "aanvraag.geslacht_x",
+          "kopie_key": "kopie.opt.x"
+        }
+      ]
+    },
+    {
+      "id": "patient_rrn",
+      "type": "tekst",
+      "label_key": "aanvraag.patient_rrn",
+      "verplicht": false,
+      "conventie": false,
+      "kopie_label": null,
+      "kopie_prioriteit": null,
+      "kopie_regel": null,
+      "sectie": "patient",
+      "hint_key": "aanvraag.patient_rrn_hint",
+      "attrs": {
+        "inputmode": "numeric"
+      }
+    },
+    {
+      "id": "onderzoek",
+      "type": "keuze",
+      "label_key": "aanvraag.sectie_onderzoek",
+      "verplicht": true,
+      "conventie": false,
+      "kopie_label": "kopie.gevraagd",
+      "kopie_prioriteit": 1,
+      "kopie_regel": "onderzoek",
+      "sectie": "onderzoek",
+      "weergave": "radio",
+      "opties": [
+        {
+          "waarde": "pg",
+          "label_key": "aanvraag.onderzoek_pg",
+          "kopie_key": "kopie.opt.pg"
+        },
+        {
+          "waarde": "psg",
+          "label_key": "aanvraag.onderzoek_psg",
+          "kopie_key": "kopie.opt.psg"
+        },
+        {
+          "waarde": "arts",
+          "label_key": "aanvraag.onderzoek_arts",
+          "kopie_key": "kopie.opt.arts"
+        }
+      ]
+    },
+    {
+      "id": "campus",
+      "type": "keuze",
+      "label_key": "aanvraag.campus",
+      "verplicht": false,
+      "conventie": false,
+      "kopie_label": "kopie.voorkeur",
+      "kopie_prioriteit": 3,
+      "kopie_regel": "onderzoek",
+      "sectie": "onderzoek",
+      "weergave": "select",
+      "opties_bron": "campussen",
+      "leeg_key": "aanvraag.campus_geen"
+    },
+    {
+      "id": "urgentie",
+      "type": "keuze",
+      "label_key": "aanvraag.sectie_urgentie",
+      "verplicht": false,
+      "conventie": false,
+      "kopie_label": "kopie.urgentie",
+      "kopie_prioriteit": 2,
+      "kopie_regel": "onderzoek",
+      "sectie": "onderzoek",
+      "weergave": "radio",
+      "standaard": "normaal",
+      "kopie_met": "urgentie_toelichting",
+      "kopie_formaat": "niet_standaard",
+      "opties": [
+        {
+          "waarde": "normaal",
+          "label_key": "aanvraag.urgentie_normaal",
+          "kopie_key": "kopie.opt.normaal"
+        },
+        {
+          "waarde": "verhoogd",
+          "label_key": "aanvraag.urgentie_verhoogd",
+          "kopie_key": "kopie.opt.verhoogd"
+        }
+      ]
+    },
+    {
+      "id": "urgentie_toelichting",
+      "type": "vrije_tekst",
+      "label_key": "aanvraag.urgentie_toelichting",
+      "verplicht": false,
+      "conventie": false,
+      "kopie_label": null,
+      "kopie_prioriteit": null,
+      "kopie_regel": null,
+      "sectie": "onderzoek",
+      "attrs": {
+        "rows": 2
+      }
+    },
+    {
+      "id": "beroepschauffeur",
+      "type": "ja_nee",
+      "label_key": "veld.beroepschauffeur",
+      "verplicht": false,
+      "conventie": true,
+      "kopie_label": "kopie.beroepschauffeur",
+      "kopie_prioriteit": 2,
+      "kopie_regel": "onderzoek",
+      "sectie": "onderzoek",
+      "weergave": "radio",
+      "kopie_formaat": "indien_ja",
+      "opties": [
+        {
+          "waarde": "ja",
+          "label_key": "veld.ja",
+          "kopie_key": "kopie.ja"
+        },
+        {
+          "waarde": "nee",
+          "label_key": "veld.nee",
+          "kopie_key": "kopie.nee"
+        }
+      ]
+    },
+    {
+      "id": "klachten",
+      "type": "meerkeuze",
+      "label_key": "aanvraag.klachten",
+      "verplicht": false,
+      "conventie": true,
+      "kopie_label": "kopie.klachten",
+      "kopie_prioriteit": 2,
+      "kopie_regel": "klachten",
+      "sectie": "klinisch",
+      "exclusief": "geen",
+      "opties": [
+        {
+          "waarde": "snurken",
+          "label_key": "aanvraag.klacht_snurken",
+          "kopie_key": "kopie.opt.klacht_snurken"
+        },
+        {
+          "waarde": "apneus",
+          "label_key": "aanvraag.klacht_apneus",
+          "kopie_key": "kopie.opt.klacht_apneus"
+        },
+        {
+          "waarde": "slaperigheid",
+          "label_key": "aanvraag.klacht_slaperigheid",
+          "kopie_key": "kopie.opt.klacht_slaperigheid"
+        },
+        {
+          "waarde": "dyspneu",
+          "label_key": "aanvraag.klacht_dyspneu",
+          "kopie_key": "kopie.opt.klacht_dyspneu"
+        },
+        {
+          "waarde": "nycturie",
+          "label_key": "aanvraag.klacht_nycturie",
+          "kopie_key": "kopie.opt.klacht_nycturie"
+        },
+        {
+          "waarde": "hoofdpijn",
+          "label_key": "aanvraag.klacht_hoofdpijn",
+          "kopie_key": "kopie.opt.klacht_hoofdpijn"
+        },
+        {
+          "waarde": "nietherstellend",
+          "label_key": "aanvraag.klacht_nietherstellend",
+          "kopie_key": "kopie.opt.klacht_nietherstellend"
+        },
+        {
+          "waarde": "slapeloosheid",
+          "label_key": "aanvraag.klacht_slapeloosheid",
+          "kopie_key": "kopie.opt.klacht_slapeloosheid"
+        },
+        {
+          "waarde": "benen",
+          "label_key": "aanvraag.klacht_benen",
+          "kopie_key": "kopie.opt.klacht_benen"
+        },
+        {
+          "waarde": "parasomnie",
+          "label_key": "aanvraag.klacht_parasomnie",
+          "kopie_key": "kopie.opt.klacht_parasomnie"
+        },
+        {
+          "waarde": "geen",
+          "label_key": "veld.geen_van_deze"
+        }
+      ]
+    },
+    {
+      "id": "slaperig_stuur",
+      "type": "ja_nee",
+      "label_key": "veld.slaperig_stuur",
+      "verplicht": false,
+      "conventie": true,
+      "kopie_label": "kopie.slaperig_stuur",
+      "kopie_prioriteit": 2,
+      "kopie_regel": "klachten",
+      "sectie": "klinisch",
+      "weergave": "radio",
+      "kopie_formaat": "indien_ja",
+      "opties": [
+        {
+          "waarde": "ja",
+          "label_key": "veld.ja",
+          "kopie_key": "kopie.ja"
+        },
+        {
+          "waarde": "nee",
+          "label_key": "veld.nee",
+          "kopie_key": "kopie.nee"
+        }
+      ]
+    },
+    {
+      "id": "lengte",
+      "type": "getal",
+      "label_key": "aanvraag.lengte",
+      "verplicht": false,
+      "conventie": true,
+      "kopie_label": null,
+      "kopie_prioriteit": null,
+      "kopie_regel": null,
+      "sectie": "klinisch",
+      "rij": "antropometrie",
+      "attrs": {
+        "min": 100,
+        "max": 250,
+        "step": 1,
+        "inputmode": "numeric"
+      }
+    },
+    {
+      "id": "gewicht",
+      "type": "getal",
+      "label_key": "aanvraag.gewicht",
+      "verplicht": false,
+      "conventie": true,
+      "kopie_label": null,
+      "kopie_prioriteit": null,
+      "kopie_regel": null,
+      "sectie": "klinisch",
+      "rij": "antropometrie",
+      "attrs": {
+        "min": 20,
+        "max": 400,
+        "step": 0.1,
+        "inputmode": "decimal"
+      }
+    },
+    {
+      "id": "bmi",
+      "type": "berekend",
+      "label_key": "aanvraag.bmi",
+      "verplicht": false,
+      "conventie": true,
+      "kopie_label": "kopie.bmi",
+      "kopie_prioriteit": 1,
+      "kopie_regel": "scores",
+      "sectie": "klinisch",
+      "rij": "antropometrie",
+      "formule": "bmi",
+      "kopie_formaat": "decimaal",
+      "kopie_volgorde": 3
+    },
+    {
+      "id": "hals",
+      "type": "getal",
+      "label_key": "aanvraag.hals",
+      "verplicht": false,
+      "conventie": true,
+      "kopie_label": "kopie.hals",
+      "kopie_prioriteit": 2,
+      "kopie_regel": "scores",
+      "sectie": "klinisch",
+      "rij": "antropometrie",
+      "kopie_formaat": "cm",
+      "kopie_volgorde": 4,
+      "attrs": {
+        "min": 20,
+        "max": 80,
+        "step": 0.5,
+        "inputmode": "decimal"
+      }
+    },
+    {
+      "id": "ess_1",
+      "type": "keuze",
+      "label_key": "aanvraag.ess_1",
+      "verplicht": false,
+      "conventie": false,
+      "kopie_label": null,
+      "kopie_prioriteit": null,
+      "kopie_regel": null,
+      "sectie": "ess",
+      "groep": "ess",
+      "weergave": "schaal",
+      "opties": [
+        {
+          "waarde": "0",
+          "label": "0"
+        },
+        {
+          "waarde": "1",
+          "label": "1"
+        },
+        {
+          "waarde": "2",
+          "label": "2"
+        },
+        {
+          "waarde": "3",
+          "label": "3"
+        }
+      ]
+    },
+    {
+      "id": "ess_2",
+      "type": "keuze",
+      "label_key": "aanvraag.ess_2",
+      "verplicht": false,
+      "conventie": false,
+      "kopie_label": null,
+      "kopie_prioriteit": null,
+      "kopie_regel": null,
+      "sectie": "ess",
+      "groep": "ess",
+      "weergave": "schaal",
+      "opties": [
+        {
+          "waarde": "0",
+          "label": "0"
+        },
+        {
+          "waarde": "1",
+          "label": "1"
+        },
+        {
+          "waarde": "2",
+          "label": "2"
+        },
+        {
+          "waarde": "3",
+          "label": "3"
+        }
+      ]
+    },
+    {
+      "id": "ess_3",
+      "type": "keuze",
+      "label_key": "aanvraag.ess_3",
+      "verplicht": false,
+      "conventie": false,
+      "kopie_label": null,
+      "kopie_prioriteit": null,
+      "kopie_regel": null,
+      "sectie": "ess",
+      "groep": "ess",
+      "weergave": "schaal",
+      "opties": [
+        {
+          "waarde": "0",
+          "label": "0"
+        },
+        {
+          "waarde": "1",
+          "label": "1"
+        },
+        {
+          "waarde": "2",
+          "label": "2"
+        },
+        {
+          "waarde": "3",
+          "label": "3"
+        }
+      ]
+    },
+    {
+      "id": "ess_4",
+      "type": "keuze",
+      "label_key": "aanvraag.ess_4",
+      "verplicht": false,
+      "conventie": false,
+      "kopie_label": null,
+      "kopie_prioriteit": null,
+      "kopie_regel": null,
+      "sectie": "ess",
+      "groep": "ess",
+      "weergave": "schaal",
+      "opties": [
+        {
+          "waarde": "0",
+          "label": "0"
+        },
+        {
+          "waarde": "1",
+          "label": "1"
+        },
+        {
+          "waarde": "2",
+          "label": "2"
+        },
+        {
+          "waarde": "3",
+          "label": "3"
+        }
+      ]
+    },
+    {
+      "id": "ess_5",
+      "type": "keuze",
+      "label_key": "aanvraag.ess_5",
+      "verplicht": false,
+      "conventie": false,
+      "kopie_label": null,
+      "kopie_prioriteit": null,
+      "kopie_regel": null,
+      "sectie": "ess",
+      "groep": "ess",
+      "weergave": "schaal",
+      "opties": [
+        {
+          "waarde": "0",
+          "label": "0"
+        },
+        {
+          "waarde": "1",
+          "label": "1"
+        },
+        {
+          "waarde": "2",
+          "label": "2"
+        },
+        {
+          "waarde": "3",
+          "label": "3"
+        }
+      ]
+    },
+    {
+      "id": "ess_6",
+      "type": "keuze",
+      "label_key": "aanvraag.ess_6",
+      "verplicht": false,
+      "conventie": false,
+      "kopie_label": null,
+      "kopie_prioriteit": null,
+      "kopie_regel": null,
+      "sectie": "ess",
+      "groep": "ess",
+      "weergave": "schaal",
+      "opties": [
+        {
+          "waarde": "0",
+          "label": "0"
+        },
+        {
+          "waarde": "1",
+          "label": "1"
+        },
+        {
+          "waarde": "2",
+          "label": "2"
+        },
+        {
+          "waarde": "3",
+          "label": "3"
+        }
+      ]
+    },
+    {
+      "id": "ess_7",
+      "type": "keuze",
+      "label_key": "aanvraag.ess_7",
+      "verplicht": false,
+      "conventie": false,
+      "kopie_label": null,
+      "kopie_prioriteit": null,
+      "kopie_regel": null,
+      "sectie": "ess",
+      "groep": "ess",
+      "weergave": "schaal",
+      "opties": [
+        {
+          "waarde": "0",
+          "label": "0"
+        },
+        {
+          "waarde": "1",
+          "label": "1"
+        },
+        {
+          "waarde": "2",
+          "label": "2"
+        },
+        {
+          "waarde": "3",
+          "label": "3"
+        }
+      ]
+    },
+    {
+      "id": "ess_8",
+      "type": "keuze",
+      "label_key": "aanvraag.ess_8",
+      "verplicht": false,
+      "conventie": false,
+      "kopie_label": null,
+      "kopie_prioriteit": null,
+      "kopie_regel": null,
+      "sectie": "ess",
+      "groep": "ess",
+      "weergave": "schaal",
+      "opties": [
+        {
+          "waarde": "0",
+          "label": "0"
+        },
+        {
+          "waarde": "1",
+          "label": "1"
+        },
+        {
+          "waarde": "2",
+          "label": "2"
+        },
+        {
+          "waarde": "3",
+          "label": "3"
+        }
+      ]
+    },
+    {
+      "id": "ess_totaal",
+      "type": "berekend",
+      "label_key": "aanvraag.ess_totaal",
+      "verplicht": false,
+      "conventie": true,
+      "kopie_label": "kopie.ess",
+      "kopie_prioriteit": 1,
+      "kopie_regel": "scores",
+      "sectie": "ess",
+      "formule": "ess",
+      "kopie_formaat": "ess",
+      "kopie_volgorde": 2
+    },
+    {
+      "id": "sb_s",
+      "type": "ja_nee",
+      "label_key": "aanvraag.sb_s",
+      "verplicht": false,
+      "conventie": false,
+      "kopie_label": null,
+      "kopie_prioriteit": null,
+      "kopie_regel": null,
+      "sectie": "stopbang",
+      "groep": "stopbang",
+      "letter": "s",
+      "weergave": "radio",
+      "opties": [
+        {
+          "waarde": "ja",
+          "label_key": "veld.ja",
+          "kopie_key": "kopie.ja"
+        },
+        {
+          "waarde": "nee",
+          "label_key": "veld.nee",
+          "kopie_key": "kopie.nee"
+        }
+      ]
+    },
+    {
+      "id": "sb_t",
+      "type": "ja_nee",
+      "label_key": "aanvraag.sb_t",
+      "verplicht": false,
+      "conventie": false,
+      "kopie_label": null,
+      "kopie_prioriteit": null,
+      "kopie_regel": null,
+      "sectie": "stopbang",
+      "groep": "stopbang",
+      "letter": "t",
+      "weergave": "radio",
+      "opties": [
+        {
+          "waarde": "ja",
+          "label_key": "veld.ja",
+          "kopie_key": "kopie.ja"
+        },
+        {
+          "waarde": "nee",
+          "label_key": "veld.nee",
+          "kopie_key": "kopie.nee"
+        }
+      ]
+    },
+    {
+      "id": "sb_o",
+      "type": "ja_nee",
+      "label_key": "aanvraag.sb_o",
+      "verplicht": false,
+      "conventie": false,
+      "kopie_label": null,
+      "kopie_prioriteit": null,
+      "kopie_regel": null,
+      "sectie": "stopbang",
+      "groep": "stopbang",
+      "letter": "o",
+      "weergave": "radio",
+      "opties": [
+        {
+          "waarde": "ja",
+          "label_key": "veld.ja",
+          "kopie_key": "kopie.ja"
+        },
+        {
+          "waarde": "nee",
+          "label_key": "veld.nee",
+          "kopie_key": "kopie.nee"
+        }
+      ]
+    },
+    {
+      "id": "sb_p",
+      "type": "ja_nee",
+      "label_key": "aanvraag.sb_p",
+      "verplicht": false,
+      "conventie": false,
+      "kopie_label": null,
+      "kopie_prioriteit": null,
+      "kopie_regel": null,
+      "sectie": "stopbang",
+      "groep": "stopbang",
+      "letter": "p",
+      "weergave": "radio",
+      "opties": [
+        {
+          "waarde": "ja",
+          "label_key": "veld.ja",
+          "kopie_key": "kopie.ja"
+        },
+        {
+          "waarde": "nee",
+          "label_key": "veld.nee",
+          "kopie_key": "kopie.nee"
+        }
+      ]
+    },
+    {
+      "id": "sb_b",
+      "type": "ja_nee",
+      "label_key": "aanvraag.sb_b",
+      "verplicht": false,
+      "conventie": false,
+      "kopie_label": null,
+      "kopie_prioriteit": null,
+      "kopie_regel": null,
+      "sectie": "stopbang",
+      "groep": "stopbang",
+      "letter": "b",
+      "weergave": "vink",
+      "afgeleid": "b"
+    },
+    {
+      "id": "sb_a",
+      "type": "ja_nee",
+      "label_key": "aanvraag.sb_a",
+      "verplicht": false,
+      "conventie": false,
+      "kopie_label": null,
+      "kopie_prioriteit": null,
+      "kopie_regel": null,
+      "sectie": "stopbang",
+      "groep": "stopbang",
+      "letter": "a",
+      "weergave": "vink",
+      "afgeleid": "a"
+    },
+    {
+      "id": "sb_n",
+      "type": "ja_nee",
+      "label_key": "aanvraag.sb_n",
+      "verplicht": false,
+      "conventie": false,
+      "kopie_label": null,
+      "kopie_prioriteit": null,
+      "kopie_regel": null,
+      "sectie": "stopbang",
+      "groep": "stopbang",
+      "letter": "n",
+      "weergave": "vink",
+      "afgeleid": "n"
+    },
+    {
+      "id": "sb_g",
+      "type": "ja_nee",
+      "label_key": "aanvraag.sb_g",
+      "verplicht": false,
+      "conventie": false,
+      "kopie_label": null,
+      "kopie_prioriteit": null,
+      "kopie_regel": null,
+      "sectie": "stopbang",
+      "groep": "stopbang",
+      "letter": "g",
+      "weergave": "vink",
+      "afgeleid": "g"
+    },
+    {
+      "id": "stopbang_totaal",
+      "type": "berekend",
+      "label_key": "aanvraag.stopbang_totaal",
+      "verplicht": false,
+      "conventie": true,
+      "kopie_label": "kopie.stopbang",
+      "kopie_prioriteit": 1,
+      "kopie_regel": "scores",
+      "sectie": "stopbang",
+      "formule": "stopbang",
+      "kopie_formaat": "stopbang",
+      "kopie_volgorde": 1
+    },
+    {
+      "id": "cv",
+      "type": "meerkeuze",
+      "label_key": "veld.cv",
+      "verplicht": false,
+      "conventie": true,
+      "kopie_label": "kopie.cv",
+      "kopie_prioriteit": 2,
+      "kopie_regel": "cv",
+      "sectie": "comorbiditeit",
+      "keuzehulp": true,
+      "exclusief": "geen",
+      "opties": [
+        {
+          "waarde": "hypertensie",
+          "label_key": "veld.cv_hypertensie",
+          "kopie_key": "kopie.opt.cv_hypertensie"
+        },
+        {
+          "waarde": "hypertensie_resistent",
+          "label_key": "aanvraag.com_hypertensie",
+          "kopie_key": "kopie.opt.cv_hypertensie_resistent"
+        },
+        {
+          "waarde": "vkf",
+          "label_key": "aanvraag.com_vkf",
+          "kopie_key": "kopie.opt.cv_vkf"
+        },
+        {
+          "waarde": "hartfalen",
+          "label_key": "aanvraag.com_hartfalen",
+          "kopie_key": "kopie.opt.cv_hartfalen"
+        },
+        {
+          "waarde": "cva",
+          "label_key": "aanvraag.com_cva",
+          "kopie_key": "kopie.opt.cv_cva"
+        },
+        {
+          "waarde": "coronair",
+          "label_key": "veld.cv_coronair",
+          "kopie_key": "kopie.opt.cv_coronair"
+        },
+        {
+          "waarde": "geen",
+          "label_key": "veld.geen_van_deze"
+        }
+      ]
+    },
+    {
+      "id": "dm2",
+      "type": "ja_nee",
+      "label_key": "veld.dm2",
+      "verplicht": false,
+      "conventie": true,
+      "kopie_label": "kopie.dm2",
+      "kopie_prioriteit": 2,
+      "kopie_regel": "cv",
+      "sectie": "comorbiditeit",
+      "weergave": "radio",
+      "kopie_formaat": "indien_ja",
+      "opties": [
+        {
+          "waarde": "ja",
+          "label_key": "veld.ja",
+          "kopie_key": "kopie.ja"
+        },
+        {
+          "waarde": "nee",
+          "label_key": "veld.nee",
+          "kopie_key": "kopie.nee"
+        }
+      ]
+    },
+    {
+      "id": "andere_comorbiditeit",
+      "type": "meerkeuze",
+      "label_key": "veld.andere_comorbiditeit",
+      "verplicht": false,
+      "conventie": false,
+      "kopie_label": "kopie.comorb",
+      "kopie_prioriteit": 3,
+      "kopie_regel": "cv",
+      "sectie": "comorbiditeit",
+      "keuzehulp": true,
+      "opties": [
+        {
+          "waarde": "copd",
+          "label_key": "aanvraag.com_copd",
+          "kopie_key": "kopie.opt.com_copd"
+        },
+        {
+          "waarde": "neuromusculair",
+          "label_key": "aanvraag.com_neuromusculair"
+        },
+        {
+          "waarde": "opioiden",
+          "label_key": "aanvraag.com_opioiden"
+        },
+        {
+          "waarde": "nier",
+          "label_key": "aanvraag.com_nier"
+        },
+        {
+          "waarde": "andere_slaapstoornis",
+          "label_key": "aanvraag.com_andere_slaapstoornis"
+        }
+      ]
+    },
+    {
+      "id": "eerder_onderzoek",
+      "type": "ja_nee",
+      "label_key": "veld.eerder_onderzoek",
+      "verplicht": false,
+      "conventie": true,
+      "kopie_label": "kopie.eerder",
+      "kopie_prioriteit": 2,
+      "kopie_regel": "eerder",
+      "sectie": "voorgeschiedenis",
+      "weergave": "radio",
+      "kopie_formaat": "eerder",
+      "opties": [
+        {
+          "waarde": "ja",
+          "label_key": "veld.ja",
+          "kopie_key": "kopie.ja"
+        },
+        {
+          "waarde": "nee",
+          "label_key": "veld.nee",
+          "kopie_key": "kopie.nee"
+        }
+      ]
+    },
+    {
+      "id": "eerder_type",
+      "type": "keuze",
+      "label_key": "veld.eerder_type",
+      "verplicht": false,
+      "conventie": false,
+      "kopie_label": null,
+      "kopie_prioriteit": null,
+      "kopie_regel": null,
+      "sectie": "voorgeschiedenis",
+      "weergave": "radio",
+      "toon_als": {
+        "veld": "eerder_onderzoek",
+        "waarde": "ja"
+      },
+      "opties": [
+        {
+          "waarde": "pg",
+          "label_key": "aanvraag.onderzoek_pg",
+          "kopie_key": "kopie.opt.pg"
+        },
+        {
+          "waarde": "psg",
+          "label_key": "aanvraag.onderzoek_psg",
+          "kopie_key": "kopie.opt.psg"
+        }
+      ]
+    },
+    {
+      "id": "eerder_datum",
+      "type": "tekst",
+      "label_key": "veld.eerder_datum",
+      "verplicht": false,
+      "conventie": false,
+      "kopie_label": null,
+      "kopie_prioriteit": null,
+      "kopie_regel": null,
+      "sectie": "voorgeschiedenis",
+      "toon_als": {
+        "veld": "eerder_onderzoek",
+        "waarde": "ja"
+      },
+      "attrs": {
+        "placeholder": "2021"
+      }
+    },
+    {
+      "id": "eerder_ahi",
+      "type": "getal",
+      "label_key": "veld.eerder_ahi",
+      "verplicht": false,
+      "conventie": false,
+      "kopie_label": null,
+      "kopie_prioriteit": null,
+      "kopie_regel": null,
+      "sectie": "voorgeschiedenis",
+      "toon_als": {
+        "veld": "eerder_onderzoek",
+        "waarde": "ja"
+      },
+      "attrs": {
+        "min": 0,
+        "max": 200,
+        "step": 0.1,
+        "inputmode": "decimal"
+      }
+    },
+    {
+      "id": "cpap_mra",
+      "type": "ja_nee",
+      "label_key": "veld.cpap_mra",
+      "verplicht": false,
+      "conventie": true,
+      "kopie_label": "kopie.cpap",
+      "kopie_prioriteit": 2,
+      "kopie_regel": "eerder",
+      "sectie": "voorgeschiedenis",
+      "weergave": "radio",
+      "kopie_met": "cpap_toelichting",
+      "opties": [
+        {
+          "waarde": "ja",
+          "label_key": "veld.ja",
+          "kopie_key": "kopie.ja"
+        },
+        {
+          "waarde": "nee",
+          "label_key": "veld.nee",
+          "kopie_key": "kopie.nee"
+        }
+      ]
+    },
+    {
+      "id": "cpap_toelichting",
+      "type": "vrije_tekst",
+      "label_key": "veld.cpap_toelichting",
+      "verplicht": false,
+      "conventie": false,
+      "kopie_label": null,
+      "kopie_prioriteit": null,
+      "kopie_regel": null,
+      "sectie": "voorgeschiedenis",
+      "toon_als": {
+        "veld": "cpap_mra",
+        "waarde": "ja"
+      },
+      "attrs": {
+        "rows": 2
+      }
+    },
+    {
+      "id": "roken",
+      "type": "keuze",
+      "label_key": "veld.roken",
+      "verplicht": false,
+      "conventie": false,
+      "kopie_label": "kopie.roken",
+      "kopie_prioriteit": 4,
+      "kopie_regel": "leefstijl",
+      "sectie": "leefstijl",
+      "weergave": "radio",
+      "opties": [
+        {
+          "waarde": "nooit",
+          "label_key": "veld.roken_nooit"
+        },
+        {
+          "waarde": "gestopt",
+          "label_key": "veld.roken_gestopt"
+        },
+        {
+          "waarde": "actief",
+          "label_key": "veld.roken_actief"
+        }
+      ]
+    },
+    {
+      "id": "alcohol",
+      "type": "keuze",
+      "label_key": "veld.alcohol",
+      "verplicht": false,
+      "conventie": false,
+      "kopie_label": "kopie.alcohol",
+      "kopie_prioriteit": 4,
+      "kopie_regel": "leefstijl",
+      "sectie": "leefstijl",
+      "weergave": "radio",
+      "opties": [
+        {
+          "waarde": "geen",
+          "label_key": "veld.alcohol_geen"
+        },
+        {
+          "waarde": "matig",
+          "label_key": "veld.alcohol_matig"
+        },
+        {
+          "waarde": "dagelijks",
+          "label_key": "veld.alcohol_dagelijks"
+        }
+      ]
+    },
+    {
+      "id": "medicatie",
+      "type": "vrije_tekst",
+      "label_key": "aanvraag.medicatie",
+      "verplicht": false,
+      "conventie": false,
+      "kopie_label": "kopie.medicatie",
+      "kopie_prioriteit": 2,
+      "kopie_regel": "medicatie",
+      "sectie": "leefstijl",
+      "inkortbaar": true,
+      "attrs": {
+        "rows": 2
+      }
+    },
+    {
+      "id": "vraagstelling",
+      "type": "vrije_tekst",
+      "label_key": "aanvraag.vraagstelling",
+      "verplicht": true,
+      "conventie": false,
+      "kopie_label": "kopie.vraag",
+      "kopie_prioriteit": 1,
+      "kopie_regel": "vraag",
+      "sectie": "vraag",
+      "inkortbaar": true,
+      "attrs": {
+        "rows": 3
+      }
+    }
+  ]
+}

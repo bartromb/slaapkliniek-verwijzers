@@ -284,3 +284,226 @@ De container (servicenaam `verwijzers`) publiceert geen poort naar buiten. Hij h
 - `nginx add_header` wordt niet geërfd zodra een location er zelf een zet: de headers staan in
   `security-headers.conf` en worden op server-niveau én in de aanvraag-location geïncludeerd.
 - Het NPM-netwerk heet per installatie anders: `NPM_NETWORK` in `.env` (zie `.env.example`).
+
+
+---
+
+# Addendum: kopieertekst, conventie-klare velden en eHealthBox-route
+
+**Opdracht voor Claude Code** · repo `bartromb/slaapkliniek-verwijzers` · aanvulling op `CLAUDE.md` · oktober 2026
+
+Lees eerst `CLAUDE.md`. Alle harde randvoorwaarden daarin blijven gelden: geen data naar de server, geen opslag in de browser, strikte CSP, geen externe scripts.
+
+---
+
+## 1. Waarom
+
+1. **Kopieertekst.** Mogelijk laat Nexuzhealth Consult (of de configuratie bij AZORG) geen PDF-bijlage toe bij een afspraak. De huisarts moet de inhoud van de verwijsbrief dan als **tekst** kunnen plakken in het vrije veld "indicatie / reden van verwijzing". Tekst in KWS is bovendien doorzoekbaar en meteen zichtbaar, dus deze functie komt er **altijd**, ook naast de PDF.
+2. **Conventie-klaar.** De gevraagde gegevens (ESS, STOP-BANG, BMI, comorbiditeit, enz.) worden **vermoedelijk** gevraagd in de nieuwe RIZIV-slaapapneuconventie vanaf 1/1/2027. De definitieve criteria zijn nog niet gekend. Daarom moet de veldenlijst **configureerbaar** zijn, zodat ze aangepast kan worden zonder codewijziging zodra de conventietekst er is.
+
+## 2. Velden: configureerbaar maken
+
+Verplaats de definitie van de formuliervelden van de templates naar **`config/velden.json`**. `build.py` rendert het formulier daaruit; `form.js`, `pdf.js` en `kopieer.js` lezen dezelfde definitie (meegegeven als `<script type="application/json" id="velden">`).
+
+Per veld:
+
+```json
+{
+  "id": "ess_totaal",
+  "type": "berekend",
+  "label_key": "veld.ess_totaal",
+  "verplicht": false,
+  "conventie": true,
+  "kopie_label": "ESS",
+  "kopie_prioriteit": 1,
+  "sectie": "klinisch"
+}
+```
+
+| Sleutel | Betekenis |
+|---|---|
+| `type` | `tekst`, `getal`, `datum`, `keuze`, `meerkeuze`, `ja_nee`, `berekend`, `vrije_tekst` |
+| `verplicht` | client-side validatie |
+| `conventie` | `true` = vermoedelijk vereist voor de conventie. Toon een klein label "conventie" naast het veld, en een teller "x van y conventiegegevens ingevuld" boven de knoppen. **Niet blokkerend.** |
+| `kopie_label` | korte afkorting in de kopieertekst; `null` = niet opnemen in de kopie |
+| `kopie_prioriteit` | 1 = altijd mee, hoger = eerst geschrapt als de tekst te lang wordt |
+| `sectie` | groepering in formulier en PDF |
+
+Voeg naast de velden uit `CLAUDE.md` §8 ook deze toe, allemaal met `"conventie": true` tenzij anders vermeld:
+
+- **Slaperigheid achter het stuur / bijna-ongeval** (ja/nee)
+- **Beroepschauffeur of veiligheidsfunctie** (ja/nee)
+- **Eerder slaaponderzoek**: ja/nee + datum + type (PG/PSG) + AHI indien gekend
+- **Eerdere of huidige CPAP / MRA**: ja/nee + toelichting
+- **Cardiovasculaire comorbiditeit** apart oplijsten (hypertensie, therapieresistente hypertensie, VKF, hartfalen, CVA/TIA, coronair lijden)
+- **Diabetes type 2**
+- **Rookgedrag** en **alcoholgebruik** (keuze, `"conventie": false`)
+
+Plaats bovenaan `velden.json` een **`"versie": "2026-10-a"`**. Die versie komt mee in de PDF-voettekst en in de kopieertekst, zodat je later kan zien met welke formulierversie een verwijzing is gemaakt.
+
+⚠️ Schrijf in de UI nergens dat iets "verplicht voor de conventie" is. Gebruik "vermoedelijk vereist in de nieuwe conventie" in de tooltip, tot `config/site.json` → `"conventie_definitief": true` staat.
+
+## 3. Kopieertekst
+
+### UI
+
+- Op de aanvraagpagina, naast "Maak verwijsbrief (PDF)": de knop **"Kopieer als tekst"**.
+- Daaronder een **voorbeeldvak** (`<textarea readonly>`, 6–10 regels) met de gegenereerde tekst, live bijgewerkt bij elke wijziging. Toon de lengte: "312 / 1000 tekens".
+- Na klikken: melding "Gekopieerd. Plak dit in Consult bij 'indicatie / reden van verwijzing'." (via `aria-live="polite"`).
+- **Fallback** als `navigator.clipboard` niet beschikbaar is (oude browser, geen HTTPS): selecteer de tekst in het voorbeeldvak en toon "Druk Ctrl+C (Cmd+C)". Gebruik geen `document.execCommand('copy')`.
+
+Het klembord is lokaal; dit verstuurt niets. De CSP (`connect-src 'none'`) blijft ongewijzigd.
+
+### Formaat
+
+Compact, één gegeven per regel, alleen ingevulde velden, geen lege labels. Taal = de taal van de interface. Voorbeeld (NL):
+
+```
+AANVRAAG SLAAPONDERZOEK – Slaapkliniek AZORG [form 2026-10-a]
+Gevraagd: PSG | Voorkeur: Wetteren | Urgentie: verhoogd (beroepschauffeur)
+Pt: ° 12/03/1968, M
+STOP-BANG 6/8 (S T O P B N) | ESS 14/24 | BMI 33,1 | Hals 43 cm
+Klachten: snurken, apneus geobserveerd, slaperig achter stuur, nycturie
+CV: HT (therapieresistent), VKF | DM2
+Eerder: PG 2021, AHI 22 | CPAP: nee
+Medicatie: bisoprolol, apixaban, metformine
+Vraag: OSA? Graag beoordeling, rijgeschiktheid.
+Verwijzer: dr. [naam], RIZIV 1-23456-78-901
+```
+
+Regels:
+- **Naam en rijksregisternummer van de patiënt komen er niet in.** De patiënt is in Consult al geselecteerd. Neem alleen geboortedatum en geslacht op, als controle.
+- Afkortingen staan in de i18n-bestanden (`kopie.*`), per taal. Gebruik in FR bv. `Demandé: PSG`, `Somnolence au volant`.
+- STOP-BANG toont de positieve letters tussen haakjes; ESS toont alleen het totaal (de itemscores staan in de PDF).
+- Decimale komma in NL en FR, punt in EN.
+- Lijnen eindigen op `\n`; geen tabs, geen opmaak, geen emoji.
+
+### Lengtelimiet
+
+- `config/site.json` → `"kopie": {"max_tekens": 1000}`. De echte limiet van het Consult-veld is nog onbekend (open vraag), dus kies 1000 als voorzichtige standaard.
+- Is de tekst te lang, laat dan eerst de velden met de hoogste `kopie_prioriteit` vallen. Kort daarna "Medicatie" en "Vraag" in tot een vast maximum met "…". Voeg ten slotte de regel `(volledige brief als PDF beschikbaar)` toe.
+- Velden met prioriteit 1 (onderzoek, STOP-BANG, ESS, BMI, vraagstelling, verwijzer) worden nooit geschrapt.
+
+## 4. Derde route: eHealthBox naar het secretariaat
+
+Naast boeken in Consult (met PDF-bijlage of kopieertekst) krijgt de verwijzer een derde route: de verwijsbrief **vanuit de eigen dossiersoftware via de eHealthBox** naar de slaapkliniek sturen. De eHealthBox is het Belgische, end-to-end versleutelde kanaal tussen zorgverleners. Huisartsen gebruiken het dagelijks en het is het aangewezen, GDPR-conforme kanaal voor medische gegevens.
+
+**De site verstuurt zelf niets.** Ze toont alleen hoe het moet en het adres.
+
+### UI
+
+Op de aanvraagpagina komt na de knoppen een blok **"Hoe bezorgt u de aanvraag?"** met drie opties:
+
+1. **Afspraak boeken in Nexuzhealth Consult**, met de PDF als bijlage of de kopieertekst in het indicatieveld (link naar `/<taal>/consult/`).
+2. **Via eHealthBox naar het secretariaat**:
+   - Download de PDF (of kopieer de tekst).
+   - Verstuur ze vanuit uw dossiersoftware naar de eHealthBox van de Slaapkliniek AZORG.
+   - Toon de identificatie uit de config, met een knop **"Kopieer"** per waarde (bv. type: `KBO` / `RIZIV` / `EHP`, nummer, kwaliteit, eventueel naam van de dienst).
+   - Vermeld: "Het secretariaat neemt contact op met de patiënt voor een afspraak."
+3. **Telefonisch**: het nummer van het secretariaat (bestaande terugvaloptie).
+
+Toon optie 2 **alleen** als `config/site.json` → `ehealthbox.actief` op `true` staat **en** de identificatie is ingevuld. Anders verberg je het blok volledig. Toon nooit een placeholder.
+
+### Configuratie (`config/site.json`)
+
+Vervang het bestaande veld `contact.ehealthbox` door:
+
+```json
+"ehealthbox": {
+  "actief": false,
+  "type": "<KBO | RIZIV | EHP>",
+  "nummer": "<...>",
+  "kwaliteit": "<bv. HOSPITAL>",
+  "dienst": "Slaapkliniek",
+  "toelichting_key": "ehealthbox.toelichting"
+}
+```
+
+`actief` gaat pas op `true` als AZORG-IT de box of de routering naar de slaapkliniek heeft bevestigd, **en** vaststaat wie de box dagelijks leest.
+
+### Expliciet niet bouwen
+
+- **Geen** formulier dat de verwijsbrief per e-mail verstuurt (ook niet "versleuteld" of via SMTP op de server). Daarmee wordt de site een verwerker van gezondheidsgegevens.
+- **Geen** `mailto:`-link met de inhoud van de brief in het onderwerp of de body. Gewone e-mail is niet end-to-end versleuteld en is niet aangewezen voor medische gegevens.
+- **Geen** integratie met eHealth-webservices vanuit de site. Versturen gebeurt altijd vanuit de software van de verwijzer.
+
+### Teksten (i18n)
+
+- `ehealthbox.titel`: "Via eHealthBox" / "Via eHealthBox"
+- `ehealthbox.toelichting`: "Versleuteld en beveiligd kanaal tussen zorgverleners, rechtstreeks vanuit uw medisch dossier." / "Canal sécurisé et chiffré entre prestataires de soins, directement depuis votre dossier médical."
+- `ehealthbox.na_verzending`: "Het secretariaat neemt contact op met de patiënt voor een afspraak." / "Le secrétariat contactera le patient pour fixer un rendez-vous."
+
+## 5. Bestanden
+
+```
+config/velden.json          # NIEUW: velddefinities + versie
+static/js/kopieer.js        # NIEUW: genereren, inkorten, kopiëren (pure functies + UI-binding)
+static/js/form.js           # aangepast: rendert/valideert op basis van velden.json, conventieteller
+static/js/pdf.js            # aangepast: secties uit velden.json, formulierversie in voettekst
+templates/aanvraag.html     # aangepast: knop, voorbeeldvak, aria-live
+i18n/*.json                 # nieuwe keys: veld.*, kopie.*, conventie.*
+tests/test_kopieer.html     # NIEUW
+tests/test_build.py         # uitgebreid
+```
+
+Houd `kopieer.js` opgesplitst in **pure functies** (`genereerTekst(data, velden, taal)`, `inkorten(tekst, regels, max)`) en een kleine UI-laag, zodat de logica testbaar is zonder DOM.
+
+## 6. Domeinen
+
+Volgens de nieuwe beslissing komen op het drukwerk (pennen, zakkaart):
+
+| Domein | Gaat naar |
+|---|---|
+| `slaapstudie.be` | `/nl/` |
+| `etudedusommeil.be` (zonder accent) | `/fr/` |
+| `verwijzers.slaapkliniek.be` | blijft werken |
+
+- Alle domeinen wijzen naar dezelfde container. Werk dit uit in `nginx/default.conf` (redirect van de root `/` per `Host` naar de juiste taal) en in de README (DNS-records en NPM-proxyhosts voor alle domeinen).
+- Canonical-URL per taal: NL → `https://slaapstudie.be/nl/…`, FR → `https://etudedusommeil.be/fr/…`. Zet die als `<link rel="canonical">`.
+- Werk ook de QR-code en URL's in templates en PDF bij naar deze domeinen. Zet de domeinen in `config/site.json`, niet hardcoded.
+
+## 7. Acceptatiecriteria
+
+- [ ] Het formulier wordt volledig opgebouwd uit `config/velden.json`. Een veld toevoegen of wijzigen vraagt geen JS- of templatewijziging.
+- [ ] De conventieteller werkt en blokkeert niets; de labels zeggen "vermoedelijk".
+- [ ] "Kopieer als tekst" werkt in Chrome, Edge, Firefox en Safari. De fallback werkt zonder `navigator.clipboard`.
+- [ ] De kopieertekst bevat **nooit** patiëntnaam of rijksregisternummer (testgeval).
+- [ ] Inkorten respecteert `max_tekens` en de prioriteiten; prioriteit 1 blijft altijd staan (testgevallen met overlange medicatie en vraagstelling).
+- [ ] NL- en FR-teksten zijn correct, met decimale komma.
+- [ ] De formulierversie staat in de PDF en in de kopieertekst.
+- [ ] De netwerktab toont nog steeds **nul** requests met formulierinhoud; de console toont geen CSP-schendingen.
+- [ ] `slaapstudie.be/` → `/nl/` en `etudedusommeil.be/` → `/fr/`; `verwijzers.slaapkliniek.be` werkt nog.
+- [ ] Het eHealthBox-blok is onzichtbaar zolang `ehealthbox.actief` op `false` staat of het nummer leeg is. Met geldige config toont het de identificatie met werkende kopieerknoppen.
+- [ ] Er bestaat nergens in de code een `mailto:` met formulierinhoud, een e-mailformulier of een SMTP-configuratie (testgeval in `test_build.py`: grep op `mailto:` met body/subject, `smtp`, `nodemailer`).
+- [ ] `CHANGELOG.md`: entry v0.2.0.
+
+## 8. Open vragen (voor Bart / AZORG-IT)
+
+1. Laat Consult een bijlage toe bij een afspraak in de AZORG-configuratie?
+2. Hoeveel tekens kan het veld "indicatie / reden van verwijzing" in Consult bevatten? (→ `max_tekens`)
+3. Kan KWS een verplichte vragenlijst per afspraaktype koppelen? Dan kunnen de conventievelden daar gestructureerd terechtkomen.
+4. **eHealthBox:** welke box gebruikt AZORG (type, nummer, kwaliteit)? Komen berichten binnen in KWS? Kan er een aparte dienstbox komen voor de slaapkliniek, of routering via de ziekenhuisbox? Wie leest ze dagelijks? Een aparte box vraagt AZORG aan, met het eHealth-certificaat van het ziekenhuis. Tot dan blijft `ehealthbox.actief` op `false`. Een persoonlijke box van een arts (RIZIV) is geen goede oplossing op dienstniveau.
+5. Zodra de conventietekst (vanaf 1/1/2027) definitief is: `velden.json` nalopen, `conventie`-vlaggen aanpassen, `conventie_definitief: true` zetten en de versie verhogen.
+
+## 9. Beslissingen bij het bouwen van het addendum (02-10-2026, v0.2.0)
+
+- Extra sleutels in `velden.json` naast die uit §2: `kopie_regel` (+ `kopie_regels` met scheiding en
+  prefix) om gegevens op één regel te groeperen, `kopie_formaat` (geboortedatum, decimaal, cm, ess,
+  stopbang, indien_ja, niet_standaard, eerder, spatie), `kopie_met` (toelichting tussen haakjes),
+  `kopie_volgorde`, `inkortbaar`, `weergave`, `opties`, `toon_als`, `exclusief`, `groep`, `letter`,
+  `afgeleid`, `formule`, `validatie`, `keuzehulp`, `rij`, `opties_bron`.
+- "Geen JS-wijziging per veld" geldt voor gewone velden. Berekende velden (`formule`) en de
+  afgeleide STOP-BANG-items gebruiken de vaste ids `lengte`, `gewicht`, `hals`,
+  `patient_geboortedatum`, `patient_geslacht`; een nieuwe formule vraagt code.
+- S/T/O/P zijn ja/nee-radio's (expliciet antwoord, nodig voor de conventieteller); B/A/N/G blijven
+  afgeleide vinkjes. De keuzehulp geeft pas een suggestie als S/T/O/P beantwoord zijn.
+- Meerkeuzevelden met `conventie` hebben een optie "Geen van deze" (`exclusief`), zodat "geen"
+  expliciet kan en meetelt.
+- `kopie_label` is een i18n-sleutel (`kopie.*`), `""` betekent "alleen de waarde" (geboortedatum,
+  geslacht), `null` betekent "nooit in de kopie".
+- De klinieknaam komt uit `site.json` → `kliniek`; de PDF-kop en de kopieertekst gebruiken dezelfde regel.
+- Canonical: NL → slaapstudie.be, FR → etudedusommeil.be, EN/DE → `domeinen.standaard`
+  (verwijzers.slaapkliniek.be). De nginx-config is statisch; `tests/test_build.py` bewaakt dat ze
+  dezelfde domeinen draagt als `site.json`.
+- Er bestaat geen QR-code in de site of de PDF; de PDF-voettekst draagt de portaal-URL per taal.
+  Een QR voor drukwerk is niet gebouwd (staat niet in de acceptatiecriteria).

@@ -68,7 +68,6 @@
   <h2 id="contact">{{ t('index.contact_titel') }}</h2>
   <ul class="contact">
     {% if contact.secretariaat_tel %}<li>{{ t('index.contact_tel') }}: <a href="tel:{{ contact.secretariaat_tel | replace(' ', '') }}">{{ contact.secretariaat_tel }}</a></li>{% endif %}
-    {% if contact.ehealthbox %}<li>{{ t('index.contact_ehealthbox') }}: {{ contact.ehealthbox }}</li>{% endif %}
     {% if contact.email_algemeen %}<li>{{ t('index.contact_email') }}: <a href="mailto:{{ contact.email_algemeen }}">{{ contact.email_algemeen }}</a></li>{% endif %}
   </ul>
 </section>

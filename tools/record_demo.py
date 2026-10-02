@@ -34,7 +34,9 @@ CAPTIONS = {
         "keuzehulp": "De keuzehulp geeft een suggestie. De slaaparts beslist.",
         "pdf": "Stap 3 — Maak de verwijsbrief (PDF). Niets wordt naar een server gestuurd.",
         "pdf_toon": "De PDF: klaar om als bijlage toe te voegen.",
-        "volgende": "Volgende stap: de afspraak zelf boeken in Nexuzhealth Consult.",
+        "voorgeschiedenis": "Comorbiditeit en voorgeschiedenis: het label \u201cconventie\u201d toont wat vermoedelijk gevraagd wordt.",
+        "kopie": "Kopieer als tekst: compact, zonder naam van de patiënt, klaar om in Consult te plakken.",
+        "volgende": "Drie routes: Consult, eHealthBox (zodra actief) of telefonisch.",
         "consult": "Stap 4 — Het stappenplan voor Consult, met terugvaloptie.",
         "login": "“Inloggen op Consult” gaat rechtstreeks naar het portaal: itsme of eID.",
         "einde": "Klaar: verwijsbrief als bijlage, afspraak in de agenda van de Slaapkliniek.",
@@ -52,7 +54,9 @@ CAPTIONS = {
         "keuzehulp": "The decision aid suggests a study type. The sleep physician decides.",
         "pdf": "Step 3 — Create the referral letter (PDF). Nothing is sent to any server.",
         "pdf_toon": "The PDF: ready to attach.",
-        "volgende": "Next step: book the appointment yourself in Nexuzhealth Consult.",
+        "voorgeschiedenis": "Comorbidity and history: the \u201cconvention\u201d label shows what will probably be required.",
+        "kopie": "Copy as text: compact, without the patient's name, ready to paste into Consult.",
+        "volgende": "Three routes: Consult, eHealthBox (once active) or by telephone.",
         "consult": "Step 4 — The step-by-step guide for Consult, with a fallback option.",
         "login": "\u201cLog in to Consult\u201d goes straight to the portal: itsme or eID.",
         "einde": "Done: referral letter attached, appointment in the Sleep Clinic's schedule.",
@@ -70,7 +74,9 @@ CAPTIONS = {
         "keuzehulp": "L'aide à la décision propose un examen. Le médecin du sommeil décide.",
         "pdf": "Étape 3 — Créez la lettre de renvoi (PDF). Rien n'est envoyé à un serveur.",
         "pdf_toon": "Le PDF : prêt à joindre en annexe.",
-        "volgende": "Étape suivante : prendre rendez-vous vous-même dans Nexuzhealth Consult.",
+        "voorgeschiedenis": "Comorbidités et antécédents : le label « convention » indique ce qui sera probablement demandé.",
+        "kopie": "Copier comme texte : compact, sans le nom du patient, prêt à coller dans Consult.",
+        "volgende": "Trois voies : Consult, eHealthBox (dès qu'elle est active) ou par téléphone.",
         "consult": "Étape 4 — Le guide pas à pas pour Consult, avec une solution de repli.",
         "login": "« Se connecter à Consult » mène directement au portail : itsme ou eID.",
         "einde": "Terminé : lettre de renvoi en annexe, rendez-vous dans l'agenda de la Clinique du sommeil.",
@@ -88,7 +94,9 @@ CAPTIONS = {
         "keuzehulp": "Die Entscheidungshilfe macht einen Vorschlag. Der Schlafmediziner entscheidet.",
         "pdf": "Schritt 3 — Überweisungsschreiben (PDF) erstellen. Nichts wird an einen Server gesendet.",
         "pdf_toon": "Das PDF: bereit als Anhang.",
-        "volgende": "Nächster Schritt: den Termin selbst in Nexuzhealth Consult buchen.",
+        "voorgeschiedenis": "Komorbidität und Vorgeschichte: das Label \u201eKonvention\u201c zeigt, was voraussichtlich verlangt wird.",
+        "kopie": "Als Text kopieren: kompakt, ohne Patientennamen, bereit zum Einfügen in Consult.",
+        "volgende": "Drei Wege: Consult, eHealthBox (sobald aktiv) oder telefonisch.",
         "consult": "Schritt 4 — Die Schritt-für-Schritt-Anleitung für Consult, mit Ausweichmöglichkeit.",
         "login": "\u201eBei Consult anmelden\u201c führt direkt zum Portal: itsme oder eID.",
         "einde": "Fertig: Überweisungsschreiben als Anhang, Termin im Kalender der Schlafklinik.",
@@ -186,6 +194,7 @@ def run(args):
                                   record_video_size={"width": W, "height": H}, bypass_csp=True,
                                   locale={"nl": "nl-BE", "fr": "fr-BE", "en": "en-GB", "de": "de-DE"}[lang],
                                   accept_downloads=True)
+        ctx.grant_permissions(["clipboard-read", "clipboard-write"])
         page = ctx.new_page()
         d = Demo(page, lang)
         base = args.base_url.rstrip("/")
@@ -213,34 +222,43 @@ def run(args):
         d.click("#campus", pause=0.2); page.select_option("#campus", index=1); time.sleep(0.4)
         d.caption("klinisch", 0.4)
         for k in ("snurken", "apneus", "slaperigheid"):
-            d.click(f"input[name='klacht'][value='{k}']", pause=0.25)
+            d.click(f"input[name='klachten'][value='{k}']", pause=0.2)
+        d.click("input[name='slaperig_stuur'][value='nee']", pause=0.2)
         d.type_into("#lengte", DEMO["lengte"]); d.type_into("#gewicht", DEMO["gewicht"]); d.type_into("#hals", DEMO["hals"])
-        d.move_to("#bmi"); time.sleep(1.2)
+        d.move_to("#bmi"); time.sleep(1.0)
         d.caption("ess", 0.4)
         for i, w in enumerate([2, 2, 1, 2, 2, 1, 1, 2], start=1):
-            d.click(f"input[name='ess_{i}'][value='{w}']", pause=0.18)
-        d.move_to("#ess_totaal"); time.sleep(1.2)
+            d.click(f"input[name='ess_{i}'][value='{w}']", pause=0.15)
+        d.move_to("#ess_totaal"); time.sleep(1.0)
         d.caption("stopbang", 0.4)
         for k in ("s", "t", "o", "p"):
-            d.click(f"input[name='sb_{k}']", pause=0.25)
-        d.move_to("#sb_totaal"); time.sleep(1.4)
+            d.click(f"input[name='sb_{k}'][value='ja']", pause=0.2)
+        d.move_to("#stopbang_totaal"); time.sleep(1.2)
+        d.caption("voorgeschiedenis", 0.4)
+        d.click("input[name='cv'][value='hypertensie']", pause=0.2)
+        d.click("input[name='dm2'][value='nee']", pause=0.2)
+        d.click("input[name='eerder_onderzoek'][value='nee']", pause=0.2)
+        d.click("input[name='cpap_mra'][value='nee']", pause=0.2)
         d.type_into("#medicatie", DEMO["medicatie"])
         d.type_into("#vraagstelling", VRAAGSTELLING[lang])
-        d.caption("keuzehulp", 0.3); d.move_to("#keuzehulp_tekst"); time.sleep(3.0); d.caption_off()
+        d.caption("keuzehulp", 0.3); d.move_to("#keuzehulp_tekst"); time.sleep(2.6); d.caption_off()
 
-        # 3. PDF
+        # 3. kopieertekst en PDF
+        d.caption("kopie", 0.5)
+        d.click("#knop_kopieer", pause=0.4)
+        d.move_to("#kopie_voorbeeld"); time.sleep(3.2); d.caption_off()
         d.caption("pdf", 0.6)
         with page.expect_download() as dl:
             d.click("#knop_pdf", pause=0.3)
         pdf_path = out / f"verwijsbrief_demo_{lang}.pdf"
         dl.value.save_as(str(pdf_path))
         time.sleep(1.2)
-        d.move_to("#volgende"); d.caption("volgende", 3.0); d.caption_off()
+        d.move_to("#bezorgen_titel"); d.caption("volgende", 3.0); d.caption_off()
 
         # 3b. de PDF zelf in beeld (pagina 1 als afbeelding)
         try:
-            import fitz  # pymupdf
-            doc = fitz.open(str(pdf_path)); pix = doc[0].get_pixmap(dpi=96)
+            import pymupdf
+            doc = pymupdf.open(str(pdf_path)); pix = doc[0].get_pixmap(dpi=96)
             png = out / f"verwijsbrief_demo_{lang}_p1.png"; pix.save(str(png))
             page.goto(png.resolve().as_uri()); time.sleep(0.4)
             page.evaluate("() => { document.body.style.background = '#e9edf5'; const img = document.querySelector('img'); if (img) { img.style.display='block'; img.style.margin='0 auto'; img.style.height='100vh'; img.style.boxShadow='0 6px 30px rgba(0,0,0,.35)'; } }")

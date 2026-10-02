@@ -6,7 +6,8 @@
 <meta http-equiv="refresh" content="1; url={{ base_path }}nl/">
 <title>{{ site_naam }}</title>
 <link rel="stylesheet" href="{{ base_path }}static/css/verwijzers.css">
-{% for code in langs %}<link rel="alternate" hreflang="{{ code }}" href="{{ site_url }}{{ base_path }}{{ code }}/">
+<link rel="icon" href="{{ base_path }}static/img/logo.svg" type="image/svg+xml">
+{% for code in langs %}<link rel="alternate" hreflang="{{ code }}" href="{{ canoniek[code] }}{{ base_path }}{{ code }}/">
 {% endfor %}</head>
 <body>
 <main class="wrap">

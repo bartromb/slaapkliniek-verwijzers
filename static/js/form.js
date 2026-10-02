@@ -1,146 +1,240 @@
-/* form.js — formulierlogica: berekeningen, validatie, keuzehulp, PDF-knop, wissen, beforeunload.
-   Alles blijft in de browser: geen fetch/XHR, geen opslag, geen cookie. */
+/* form.js — formulierlogica op basis van config/velden.json (meegegeven als #velden): waarden lezen,
+   berekeningen, zichtbaarheid (toon_als), validatie, conventieteller, keuzehulp, kopieertekst en
+   PDF. Alles blijft in de browser: geen fetch/XHR, geen opslag, geen cookie.
+   Gewone velden vragen geen code; berekende velden (formule bmi/ess/stopbang) en de afgeleide
+   STOP-BANG-items gebruiken de vaste ids lengte, gewicht, hals, patient_geboortedatum, patient_geslacht. */
 (function () {
   'use strict';
-  var S = window.Scores, P = window.Pdf;
+  var S = window.Scores, P = window.Pdf, K = window.Kopieer;
   var form = document.getElementById('verwijsbrief');
-  if (!form || !S || !P) return;
+  if (!form || !S || !K) return;
 
-  var I18N = JSON.parse(document.getElementById('i18n').textContent);
-  var SITE = JSON.parse(document.getElementById('site').textContent);
-  var melding = document.getElementById('melding');
-  var volgende = document.getElementById('volgende');
-  var vuil = false;
+  function lees(id) { return JSON.parse(document.getElementById(id).textContent); }
+  function $(id) { return document.getElementById(id); }
+  function alle(sel) { return Array.prototype.slice.call(form.querySelectorAll(sel)); }
+
+  var I18N = lees('i18n'), SITE = lees('site'), DEF = lees('velden');
+  var VELDEN = DEF.velden, perId = {};
+  VELDEN.forEach(function (v) { perId[v.id] = v; });
+  var melding = $('melding'), vuil = false;
 
   function t(key, params) {
     var s = I18N[key] !== undefined ? I18N[key] : key;
     if (params) Object.keys(params).forEach(function (k) { s = s.split('{' + k + '}').join(String(params[k])); });
     return s;
   }
-  function $(id) { return document.getElementById(id); }
-  function val(id) { var el = $(id); return el ? String(el.value || '').trim() : ''; }
-  function radio(naam) { var el = form.querySelector('input[name="' + naam + '"]:checked'); return el ? el.value : ''; }
-  function checks(naam) { return Array.prototype.map.call(form.querySelectorAll('input[name="' + naam + '"]:checked'), function (el) { return el.value; }); }
-  function toon(tekst, ok) { melding.textContent = tekst; melding.className = 'melding' + (ok ? ' ok' : ''); melding.hidden = false; melding.focus && melding.focus(); }
+  function groep(naam) { return VELDEN.filter(function (v) { return v.groep === naam; }); }
+  function wrapper(v) { return form.querySelector('[data-veld="' + v.id + '"]'); }
+  function zichtbaar(v) { var w = wrapper(v); return !(w && w.hidden); }
+  function toon(tekst, ok) { melding.textContent = tekst; melding.className = 'melding' + (ok ? ' ok' : ''); melding.hidden = false; }
   function verberg() { melding.hidden = true; melding.textContent = ''; }
 
-  // ── berekeningen ──────────────────────────────────────────────────────────
-  function essItems() {
-    var items = [];
-    for (var i = 1; i <= 8; i++) { var v = radio('ess_' + i); items.push(v === '' ? null : Number(v)); }
-    return items;
-  }
-  function stopbangItems() {
-    var o = {};
-    S.SB_ITEMS.forEach(function (k) { var el = form.querySelector('input[name="sb_' + k + '"]'); o[k] = !!(el && el.checked); });
-    return o;
-  }
-  function herbereken() {
-    var b = S.bmi(val('lengte'), val('gewicht'));
-    $('bmi').value = b === null ? '—' : String(b);
-    $('bmi').textContent = $('bmi').value;
-
-    var ess = S.essTotaal(essItems());
-    $('ess_totaal').textContent = ess === null ? '—' : String(ess);
-    var interp = S.essInterpretatie(ess);
-    $('ess_interpretatie').textContent = interp ? '— ' + t('js.ess_interpretatie_' + interp) : '';
-
-    var afgeleid = S.stopbangAfgeleid({ bmi: b, leeftijd: S.leeftijd(val('patient_geboortedatum')), hals: val('hals'), geslacht: radio('patient_geslacht') });
-    ['b', 'a', 'n', 'g'].forEach(function (k) {
-      var el = form.querySelector('input[name="sb_' + k + '"]');
-      if (el && el.dataset.handmatig !== '1') el.checked = afgeleid[k];
-    });
-    var sb = S.stopbangTotaal(stopbangItems());
-    $('sb_totaal').textContent = String(sb);
-
-    var keuze = S.keuzehulp({ stopbang: sb, comorbiditeiten: checks('com'), drempel: SITE.keuzehulp.stopbang_hoge_pretest, naarPsg: SITE.keuzehulp.comorbiditeit_naar_psg });
-    var tekst;
-    if (keuze.reden === 'comorbiditeit') tekst = t('js.keuze_psg_com');
-    else if (keuze.reden === 'hoog') tekst = t('js.keuze_pg', { score: sb, drempel: SITE.keuzehulp.stopbang_hoge_pretest });
-    else if (keuze.reden === 'laag') tekst = t('js.keuze_psg_laag', { score: sb, drempel: SITE.keuzehulp.stopbang_hoge_pretest });
-    else tekst = t('js.keuze_onvolledig');
-    $('keuzehulp_tekst').textContent = tekst;
-    return { bmi: b, ess: ess, essInterpretatie: interp, stopbang: sb, keuzehulpTekst: tekst };
-  }
-
-  // ── validatie ─────────────────────────────────────────────────────────────
-  function valideer() {
-    var fouten = [], ontbreekt = [];
-    Array.prototype.forEach.call(form.querySelectorAll('.ongeldig'), function (el) { el.classList.remove('ongeldig'); });
-    Array.prototype.forEach.call(form.querySelectorAll('[required]'), function (el) {
-      if (String(el.value || '').trim() === '') { ontbreekt.push(el.dataset.label || el.name); el.classList.add('ongeldig'); }
-    });
-    if (radio('onderzoek') === '') {
-      var eerste = form.querySelector('input[name="onderzoek"]');
-      ontbreekt.push(eerste.dataset.label || 'onderzoek');
+  // ── waarden ───────────────────────────────────────────────────────────────
+  function ruw(v) {
+    var el, r;
+    switch (v.type) {
+      case 'tekst': case 'vrije_tekst': case 'datum': case 'getal':
+        el = $(v.id); return el ? String(el.value || '').trim() : '';
+      case 'keuze':
+        if (v.weergave === 'select') { el = $(v.id); return el ? el.value : ''; }
+        r = form.querySelector('input[name="' + v.id + '"]:checked'); return r ? r.value : '';
+      case 'ja_nee':
+        if (v.weergave === 'vink') { el = $(v.id); return el && el.checked ? 'ja' : 'nee'; }
+        r = form.querySelector('input[name="' + v.id + '"]:checked'); return r ? r.value : '';
+      case 'meerkeuze':
+        return alle('input[name="' + v.id + '"]:checked').map(function (c) { return c.value; });
+      default: return null;
     }
+  }
+
+  function pasZichtbaarheidToe() {
+    VELDEN.forEach(function (v) {
+      if (!v.toon_als) return;
+      var w = wrapper(v), bron = perId[v.toon_als.veld];
+      if (w && bron) w.hidden = ruw(bron) !== v.toon_als.waarde;
+    });
+  }
+
+  function verzamel() {
+    var data = {};
+    VELDEN.forEach(function (v) {
+      if (v.type === 'berekend') return;
+      data[v.id] = zichtbaar(v) ? ruw(v) : (v.type === 'meerkeuze' ? [] : '');
+      // een geldig RIZIV-nummer krijgt overal dezelfde nette vorm (kopieertekst én PDF)
+      if (v.validatie === 'riziv' && S.rizivNormaliseer(data[v.id])) data[v.id] = S.rizivNormaliseer(data[v.id]);
+    });
+    var bmi = S.bmi(data.lengte, data.gewicht);
+    var afg = S.stopbangAfgeleid({ bmi: bmi, leeftijd: S.leeftijd(data.patient_geboortedatum), hals: data.hals, geslacht: data.patient_geslacht });
+    VELDEN.forEach(function (v) {
+      if (!v.afgeleid) return;
+      var el = $(v.id);
+      if (el && el.dataset.handmatig !== '1') el.checked = !!afg[v.afgeleid];
+      data[v.id] = el && el.checked ? 'ja' : 'nee';
+    });
+    VELDEN.forEach(function (v) {
+      if (v.type !== 'berekend') return;
+      if (v.formule === 'bmi') data[v.id] = bmi;
+      else if (v.formule === 'ess') data[v.id] = S.essTotaal(groep('ess').map(function (x) { return data[x.id] === '' ? null : Number(data[x.id]); }));
+      else if (v.formule === 'stopbang') {
+        var items = {}, volledig = true;
+        groep('stopbang').forEach(function (x) { if (data[x.id] === '') volledig = false; items[x.letter] = data[x.id] === 'ja'; });
+        data[v.id] = volledig ? S.stopbangTotaal(items) : null;
+      } else data[v.id] = null;
+    });
+    return data;
+  }
+
+  function ingevuld(v, data) {
+    var w = data[v.id];
+    if (v.type === 'meerkeuze') return w.length > 0;
+    return w !== '' && w !== null && w !== undefined;
+  }
+  function stopbangLetters(data) {
+    return groep('stopbang').filter(function (x) { return data[x.id] === 'ja'; }).map(function (x) { return String(x.letter).toUpperCase(); }).join(' ');
+  }
+  function veldMetFormule(f) { return VELDEN.filter(function (v) { return v.formule === f; })[0]; }
+
+  // ── herberekenen: uitvoer, keuzehulp, conventieteller, kopieertekst ──────
+  function herbereken() {
+    pasZichtbaarheidToe();
+    var data = verzamel(), taal = SITE.lang;
+    VELDEN.forEach(function (v) {
+      if (v.type !== 'berekend') return;
+      var el = $(v.id), toel = $(v.id + '_toelichting'), w = data[v.id];
+      if (!el) return;
+      if (w === null || w === undefined) { el.textContent = '—'; if (toel) toel.textContent = ''; return; }
+      if (v.formule === 'bmi') el.textContent = K.getalTekst(w, taal, 1);
+      else if (v.formule === 'ess') { el.textContent = w + ' / 24'; if (toel) toel.textContent = t('js.ess_interpretatie_' + S.essInterpretatie(w)); }
+      else if (v.formule === 'stopbang') el.textContent = w + ' / 8';
+      else el.textContent = String(w);
+    });
+
+    var sbVeld = veldMetFormule('stopbang'), sb = sbVeld ? data[sbVeld.id] : null;
+    var com = [];
+    VELDEN.forEach(function (v) { if (v.keuzehulp) com = com.concat(data[v.id] || []); });
+    var kh = SITE.keuzehulp || {};
+    var keuze = S.keuzehulp({ stopbang: sb, comorbiditeiten: com, drempel: kh.stopbang_hoge_pretest, naarPsg: kh.comorbiditeit_naar_psg });
+    var khTekst;
+    if (keuze.reden === 'comorbiditeit') khTekst = t('js.keuze_psg_com');
+    else if (keuze.reden === 'hoog') khTekst = t('js.keuze_pg', { score: sb, drempel: kh.stopbang_hoge_pretest });
+    else if (keuze.reden === 'laag') khTekst = t('js.keuze_psg_laag', { score: sb, drempel: kh.stopbang_hoge_pretest });
+    else khTekst = t('js.keuze_onvolledig');
+    $('keuzehulp_tekst').textContent = khTekst;
+
+    var conv = VELDEN.filter(function (v) { return v.conventie && zichtbaar(v); });
+    var teller = $('conventie_teller');
+    if (teller) teller.textContent = t('conventie.teller', { x: conv.filter(function (v) { return ingevuld(v, data); }).length, y: conv.length });
+
+    var vak = $('kopie_voorbeeld');
+    if (vak) {
+      var kopie = K.genereerTekst(data, DEF, taal, { t: t, max: SITE.kopie.max_tekens, maxVrij: SITE.kopie.max_vrije_tekst, kliniek: SITE.kliniek });
+      vak.value = kopie.tekst;
+      $('kopie_lengte').textContent = t('kopie.lengte', { n: kopie.lengte, max: SITE.kopie.max_tekens });
+    }
+    return { data: data, keuzehulpTekst: khTekst };
+  }
+
+  // ── validatie (alleen `verplicht` en formaatregels; conventievelden blokkeren niets) ──
+  function markeer(v) { var el = $(v.id); if (el && el.classList) el.classList.add('ongeldig'); }
+  function valideer(data) {
+    var fouten = [], ontbreekt = [];
+    alle('.ongeldig').forEach(function (el) { el.classList.remove('ongeldig'); });
+    VELDEN.forEach(function (v) {
+      if (!v.verplicht || !zichtbaar(v) || ingevuld(v, data)) return;
+      ontbreekt.push(t(v.label_key)); markeer(v);
+    });
     if (ontbreekt.length) fouten.push(t('js.val_verplicht', { velden: ontbreekt.join(', ') }));
-    var riziv = val('verwijzer_riziv');
-    if (riziv !== '' && !S.rizivGeldig(riziv)) { fouten.push(t('js.val_riziv')); $('verwijzer_riziv').classList.add('ongeldig'); }
-    var gd = val('patient_geboortedatum');
-    if (gd !== '' && !S.geboortedatumGeldig(gd)) { fouten.push(t('js.val_geboortedatum')); $('patient_geboortedatum').classList.add('ongeldig'); }
+    VELDEN.forEach(function (v) {
+      if (!v.validatie || data[v.id] === '') return;
+      if (v.validatie === 'riziv' && !S.rizivGeldig(data[v.id])) { fouten.push(t('js.val_riziv')); markeer(v); }
+      if (v.validatie === 'geboortedatum' && !S.geboortedatumGeldig(data[v.id])) { fouten.push(t('js.val_geboortedatum')); markeer(v); }
+    });
     return fouten;
   }
 
-  // ── gegevens voor de PDF ──────────────────────────────────────────────────
-  function labelVan(naam, waarde) {
-    var el = form.querySelector('input[name="' + naam + '"][value="' + waarde + '"]');
-    return el && el.parentNode ? el.parentNode.textContent.trim() : waarde;
+  // ── PDF-model: secties en regels volgen velden.json ───────────────────────
+  function optieLabel(v, waarde) {
+    var o = K.vindOptie(v, waarde);
+    if (!o) return String(waarde);
+    return o.label !== undefined ? String(o.label) : t(o.label_key);
   }
-  function verzamel(berekend) {
-    var sbItems = stopbangItems();
-    var geslacht = radio('patient_geslacht');
-    var campusId = val('campus');
-    return {
-      verwijzer: { naam: val('verwijzer_naam'), riziv: S.rizivNormaliseer(val('verwijzer_riziv')) || val('verwijzer_riziv'), adres: val('verwijzer_adres'), tel: val('verwijzer_tel') },
-      patient: { naam: val('patient_naam'), geboortedatum: val('patient_geboortedatum'), geslacht: geslacht,
-                 geslachtLabel: geslacht ? labelVan('patient_geslacht', geslacht) : '', rrn: val('patient_rrn') },
-      onderzoek: { code: radio('onderzoek'), label: labelVan('onderzoek', radio('onderzoek')),
-                   campus: campusId, campusLabel: campusId ? (SITE.campussen[campusId] || campusId) : t('aanvraag.campus_geen') },
-      urgentie: { code: radio('urgentie'), label: labelVan('urgentie', radio('urgentie')), toelichting: val('urgentie_toelichting') },
-      klachten: checks('klacht').map(function (k) { return t('aanvraag.klacht_' + k); }),
-      lengte: val('lengte'), gewicht: val('gewicht'), bmi: berekend.bmi, hals: val('hals'),
-      ess: { totaal: berekend.ess, items: essItems(), interpretatie: berekend.essInterpretatie ? t('js.ess_interpretatie_' + berekend.essInterpretatie) : '' },
-      stopbang: { totaal: berekend.stopbang, items: sbItems,
-                  itemsTekst: S.SB_ITEMS.map(function (k) { return k.toUpperCase() + (sbItems[k] ? '+' : '-'); }).join(' ') },
-      comorbiditeit: checks('com').map(function (k) { return t('aanvraag.com_' + k); }),
-      medicatie: val('medicatie'),
-      eerder: { ja: radio('eerder') === 'ja', toelichting: val('eerder_toelichting') },
-      vraagstelling: val('vraagstelling'),
-      keuzehulpTekst: berekend.keuzehulpTekst
-    };
+  function weergave(v, data) {
+    var w = data[v.id];
+    switch (v.type) {
+      case 'getal': return K.getalTekst(w, SITE.lang);
+      case 'keuze': return w === '' ? '' : optieLabel(v, w);
+      case 'ja_nee': return w === '' ? '' : t(w === 'ja' ? 'veld.ja' : 'veld.nee');
+      case 'meerkeuze': return w.map(function (x) { return optieLabel(v, x); }).join(', ');
+      case 'berekend':
+        if (w === null || w === undefined) return '';
+        if (v.formule === 'bmi') return K.getalTekst(w, SITE.lang, 1);
+        if (v.formule === 'ess') return w + '/24 (' + t('js.ess_interpretatie_' + S.essInterpretatie(w)) + ')';
+        if (v.formule === 'stopbang') { var l = stopbangLetters(data); return w + '/8' + (l ? ' (' + l + ')' : ''); }
+        return String(w);
+      default: return String(w || '');
+    }
+  }
+  function pdfModel(data, keuzehulpTekst) {
+    var secties = [], vrij = [];
+    DEF.secties.forEach(function (s) {
+      var vs = VELDEN.filter(function (v) { return v.sectie === s.id && zichtbaar(v); });
+      if (vs.length === 1 && vs[0].type === 'vrije_tekst') { vrij.push({ titel: t(s.label_key), tekst: data[vs[0].id] }); return; }
+      var regels = [];
+      vs.forEach(function (v) {
+        if (v.groep === 'ess' || v.groep === 'stopbang') return;       // items staan bij het totaal
+        var w = weergave(v, data);
+        if (w === '' && !v.conventie && !v.verplicht) return;
+        regels.push({ label: t(v.label_key), waarde: w });
+        if (v.formule === 'ess' && data[v.id] !== null && data[v.id] !== undefined) {
+          regels.push({ label: t('js.pdf_ess_items'), waarde: groep('ess').map(function (x, i) { return (i + 1) + ':' + data[x.id]; }).join('  ') });
+        }
+      });
+      secties.push({ titel: t(s.label_key), regels: regels });
+    });
+    vrij.push({ titel: t('js.pdf_keuzehulp'), tekst: keuzehulpTekst + '\n' + t('aanvraag.keuzehulp_arts') });
+    return { kop: t('kopie.kop') + ' – ' + SITE.kliniek, secties: secties, vrij: vrij,
+             verwijzerNaam: data.verwijzer_naam || '', versie: DEF.versie, url: SITE.url };
   }
 
   // ── gebeurtenissen ────────────────────────────────────────────────────────
   form.addEventListener('input', function () { vuil = true; herbereken(); });
   form.addEventListener('change', function (e) {
     vuil = true;
-    if (e.target && e.target.classList && e.target.classList.contains('afgeleid')) e.target.dataset.handmatig = '1';
+    var el = e.target;
+    if (el && el.classList && el.classList.contains('afgeleid')) el.dataset.handmatig = '1';
+    // "geen van deze" sluit de andere opties uit, en omgekeerd
+    if (el && el.type === 'checkbox' && perId[el.name] && perId[el.name].exclusief && el.checked) {
+      var ex = perId[el.name].exclusief;
+      alle('input[name="' + el.name + '"]').forEach(function (c) {
+        if (c !== el && (el.value === ex || c.value === ex)) c.checked = false;
+      });
+    }
     herbereken();
   });
   form.addEventListener('submit', function (e) { e.preventDefault(); });
 
   $('knop_pdf').addEventListener('click', function () {
-    var berekend = herbereken();
-    var fouten = valideer();
-    if (fouten.length) { volgende.hidden = true; toon(fouten.join(' '), false); return; }
+    var r = herbereken();
+    var fouten = valideer(r.data);
+    if (fouten.length) { toon(fouten.join(' '), false); melding.focus(); return; }
     try {
-      P.maak(verzamel(berekend), t);
+      P.maak(pdfModel(r.data, r.keuzehulpTekst), t);
     } catch (err) {
       toon(String(err && err.message ? err.message : err), false);
       return;
     }
     toon(t('js.val_ok'), true);
-    volgende.hidden = false;
-    volgende.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    var bez = $('bezorgen');
+    if (bez) bez.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
   $('knop_wissen').addEventListener('click', function () {
     if (vuil && !window.confirm(t('js.wissen_bevestig'))) return;
     form.reset();
-    Array.prototype.forEach.call(form.querySelectorAll('[data-handmatig]'), function (el) { delete el.dataset.handmatig; });
-    Array.prototype.forEach.call(form.querySelectorAll('.ongeldig'), function (el) { el.classList.remove('ongeldig'); });
-    vuil = false; volgende.hidden = true; verberg(); herbereken();
+    alle('[data-handmatig]').forEach(function (el) { delete el.dataset.handmatig; });
+    alle('.ongeldig').forEach(function (el) { el.classList.remove('ongeldig'); });
+    var km = $('kopie_melding'); if (km) km.textContent = '';
+    vuil = false; verberg(); herbereken();
   });
 
   window.addEventListener('beforeunload', function (e) {
@@ -153,5 +247,6 @@
     a.addEventListener('click', function (e) { if (vuil && !window.confirm(t('js.verlaten'))) e.preventDefault(); });
   });
 
+  K.bindUI(t);
   herbereken();
 })();
